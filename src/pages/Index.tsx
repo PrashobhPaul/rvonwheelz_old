@@ -1,16 +1,97 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useMemo, useCallback } from "react";
+import { getRides } from "@/lib/rides";
+import { Ride } from "@/lib/types";
+import { DirectionToggle } from "@/components/DirectionToggle";
+import { OfferRideForm } from "@/components/OfferRideForm";
+import { RideCard } from "@/components/RideCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Plus, Search, Leaf } from "lucide-react";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+export default function Index() {
+  const [rides, setRides] = useState(getRides);
+  const [filterDirection, setFilterDirection] = useState<Ride["direction"]>("to-office");
+  const [filterDate, setFilterDate] = useState(new Date().toISOString().split("T")[0]);
+  const [showForm, setShowForm] = useState(false);
+
+  const refresh = useCallback(() => setRides(getRides()), []);
+
+  const filtered = useMemo(() => {
+    return rides
+      .filter((r) => r.direction === filterDirection)
+      .filter((r) => !filterDate || r.date === filterDate)
+      .sort((a, b) => a.time.localeCompare(b.time));
+  }, [rides, filterDirection, filterDate]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-primary px-4 py-4 text-primary-foreground">
+        <div className="container max-w-lg mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Leaf className="w-6 h-6" />
+            <h1 className="text-lg font-bold tracking-tight">RideShare</h1>
+          </div>
+          <p className="text-xs opacity-80">Nacharam ↔ Sattva</p>
+        </div>
+      </header>
+
+      <main className="container max-w-lg mx-auto px-4 py-5 space-y-5">
+        {/* Direction Filter */}
+        <DirectionToggle direction={filterDirection} onChange={setFilterDirection} />
+
+        {/* Date filter + Offer button */}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              type="date"
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+              className="pl-9 text-sm"
+            />
+          </div>
+          <Button onClick={() => setShowForm(!showForm)} className="shrink-0">
+            <Plus className="w-4 h-4 mr-1" /> Offer Ride
+          </Button>
+        </div>
+
+        {/* Offer Form */}
+        {showForm && <OfferRideForm onClose={() => setShowForm(false)} onRideAdded={refresh} />}
+
+        {/* Ride List */}
+        <div className="space-y-3">
+          {filtered.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Car className="w-10 h-10 mx-auto mb-3 opacity-40" />
+              <p className="text-sm">No rides found for this date & direction.</p>
+              <p className="text-xs mt-1">Be the first to offer a ride!</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-xs text-muted-foreground">{filtered.length} ride{filtered.length !== 1 ? "s" : ""} available</p>
+              {filtered.map((ride) => (
+                <RideCard key={ride.id} ride={ride} onDeleted={refresh} />
+              ))}
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <footer className="text-center pt-6 pb-4 text-xs text-muted-foreground border-t">
+          <p>🌱 Share rides, reduce emissions, save money</p>
+          <p className="mt-1">Open-source · Zero cost · Community driven</p>
+        </footer>
+      </main>
     </div>
   );
-};
+}
 
-const Index = PlaceholderIndex;
-
-export default Index;
+function Car(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-2-2.2-3.3C13 5.6 12 5 11 5H5c-1 0-2 .5-2.8 1.3L0 9h3c.6 0 1 .4 1 1v7" />
+      <circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" />
+    </svg>
+  );
+}
