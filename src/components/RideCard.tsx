@@ -191,7 +191,7 @@ export function RideCard({ ride, onDeleted }: RideCardProps) {
           </div>
         )}
 
-        {showRequests && (
+        {ownerVerified && (
           <div className="space-y-2 animate-slide-up border-t pt-3">
             <p className="text-xs font-medium text-foreground">Ride Requests</p>
             {requests.length === 0 ? (
