@@ -22,6 +22,7 @@ export function RideCard({ ride, onDeleted }: RideCardProps) {
   const [passengerPhone, setPassengerPhone] = useState("");
   const [showRequests, setShowRequests] = useState(false);
   const [ownerPhone, setOwnerPhone] = useState("");
+  const [ownerVerified, setOwnerVerified] = useState(false);
   const [, forceUpdate] = useState(0);
 
   const isToOffice = ride.direction === "to-office";
