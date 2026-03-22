@@ -95,7 +95,7 @@ export function RideCard({ ride, onDeleted }: RideCardProps) {
       toast.error("Enter your registered phone to view requests");
       return;
     }
-    setShowRequests(true);
+    setOwnerVerified(true);
   };
 
   const pendingRequests = requests.filter(r => r.status === "pending");
