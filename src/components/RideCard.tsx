@@ -181,7 +181,7 @@ export function RideCard({ ride, onDeleted }: RideCardProps) {
         )}
 
         {/* Manage requests (driver view - requires phone verification) */}
-        {showRequests && !showRequestsList && (
+        {showRequests && !ownerVerified && (
           <div className="space-y-2 animate-slide-up border-t pt-3">
             <p className="text-xs text-muted-foreground">Enter your registered phone to manage requests</p>
             <div className="flex gap-2">
