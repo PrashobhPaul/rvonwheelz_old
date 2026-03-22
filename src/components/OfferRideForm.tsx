@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Ride } from "@/lib/types";
+import { Ride, canCreateRide } from "@/lib/types";
 import { addRide } from "@/lib/rides";
 import { DirectionToggle } from "./DirectionToggle";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,10 @@ export function OfferRideForm({ onClose, onRideAdded }: OfferRideFormProps) {
     e.preventDefault();
     if (!name.trim() || !phone.trim() || phone.trim().length < 10) {
       toast.error("Please enter a valid name and 10-digit phone number");
+      return;
+    }
+    if (!canCreateRide(date, time)) {
+      toast.error("Cannot create a ride that starts within 30 minutes");
       return;
     }
     addRide({ name: name.trim(), phone: phone.trim(), direction, date, time, seats, vehicle: vehicle.trim() || "Car" });
