@@ -1,6 +1,7 @@
-import { Ride } from "./types";
+import { Ride, RideRequest } from "./types";
 
-const STORAGE_KEY = "carpool-rides";
+const RIDES_KEY = "carpool-rides";
+const REQUESTS_KEY = "carpool-requests";
 
 function today(offsetDays = 0) {
   const d = new Date();
@@ -16,41 +17,83 @@ const SEED_RIDES: Ride[] = [
   { id: "seed-5", name: "Kiran Rao", phone: "9556677889", direction: "to-office", date: today(1), time: "08:00", seats: 2, vehicle: "Car - Tata Nexon", createdAt: new Date().toISOString() },
 ];
 
-function initStorage(): Ride[] {
-  const stored = localStorage.getItem(STORAGE_KEY);
+// ─── Rides ───
+
+function initRides(): Ride[] {
+  const stored = localStorage.getItem(RIDES_KEY);
   if (!stored) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_RIDES));
+    localStorage.setItem(RIDES_KEY, JSON.stringify(SEED_RIDES));
     return SEED_RIDES;
   }
   return JSON.parse(stored);
 }
 
 export function getRides(): Ride[] {
-  return initStorage();
+  return initRides();
 }
 
 function saveRides(rides: Ride[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(rides));
+  localStorage.setItem(RIDES_KEY, JSON.stringify(rides));
 }
 
 export function addRide(ride: Omit<Ride, "id" | "createdAt">): Ride {
   const rides = getRides();
-  const newRide: Ride = {
-    ...ride,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-  };
+  const newRide: Ride = { ...ride, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
   rides.unshift(newRide);
   saveRides(rides);
   return newRide;
 }
 
 export function deleteRide(id: string) {
-  const rides = getRides().filter((r) => r.id !== id);
-  saveRides(rides);
+  saveRides(getRides().filter((r) => r.id !== id));
+  // Also clean up related requests
+  saveRequests(getRequests().filter((r) => r.rideId !== id));
 }
 
 export function updateRide(id: string, data: Partial<Omit<Ride, "id" | "createdAt">>) {
-  const rides = getRides().map((r) => (r.id === id ? { ...r, ...data } : r));
-  saveRides(rides);
+  saveRides(getRides().map((r) => (r.id === id ? { ...r, ...data } : r)));
+}
+
+// ─── Ride Requests ───
+
+function initRequests(): RideRequest[] {
+  const stored = localStorage.getItem(REQUESTS_KEY);
+  if (!stored) {
+    localStorage.setItem(REQUESTS_KEY, JSON.stringify([]));
+    return [];
+  }
+  return JSON.parse(stored);
+}
+
+export function getRequests(): RideRequest[] {
+  return initRequests();
+}
+
+function saveRequests(requests: RideRequest[]) {
+  localStorage.setItem(REQUESTS_KEY, JSON.stringify(requests));
+}
+
+export function addRequest(req: Omit<RideRequest, "id" | "status" | "requestedAt">): RideRequest {
+  const requests = getRequests();
+  const newReq: RideRequest = {
+    ...req,
+    id: crypto.randomUUID(),
+    status: "pending",
+    requestedAt: new Date().toISOString(),
+  };
+  requests.push(newReq);
+  saveRequests(requests);
+  return newReq;
+}
+
+export function updateRequestStatus(id: string, status: RideRequest["status"]) {
+  saveRequests(getRequests().map((r) => (r.id === id ? { ...r, status } : r)));
+}
+
+export function getRequestsForRide(rideId: string): RideRequest[] {
+  return getRequests().filter((r) => r.rideId === rideId);
+}
+
+export function getApprovedCount(rideId: string): number {
+  return getRequests().filter((r) => r.rideId === rideId && r.status === "approved").length;
 }
