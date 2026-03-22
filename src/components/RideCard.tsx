@@ -180,14 +180,13 @@ export function RideCard({ ride, onDeleted }: RideCardProps) {
         )}
 
         {/* Manage requests (driver view - requires phone verification) */}
-        {!showRequests && !requestMode && (
-          <div className="space-y-2 animate-slide-up border-t pt-3" style={{ display: ownerPhone !== "" || pendingRequests.length > 0 ? "block" : "none" }}>
-            {ownerPhone !== "" && !showRequests && (
-              <div className="flex gap-2">
-                <Input placeholder="Enter your phone to manage" value={ownerPhone} onChange={e => setOwnerPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} className="text-sm h-8" />
-                <Button size="sm" onClick={handleShowRequests} className="text-xs shrink-0">View</Button>
-              </div>
-            )}
+        {showRequests && !showRequestsList && (
+          <div className="space-y-2 animate-slide-up border-t pt-3">
+            <p className="text-xs text-muted-foreground">Enter your registered phone to manage requests</p>
+            <div className="flex gap-2">
+              <Input placeholder="Your phone" value={ownerPhone} onChange={e => setOwnerPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} className="text-sm h-8" />
+              <Button size="sm" onClick={handleShowRequests} className="text-xs shrink-0">View</Button>
+            </div>
           </div>
         )}
 
