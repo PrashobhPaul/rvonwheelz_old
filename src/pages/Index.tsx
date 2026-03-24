@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
+import { useTheme } from "next-themes";
 import { Ride } from "@/lib/types";
 import { DirectionToggle } from "@/components/DirectionToggle";
 import { OfferRideForm } from "@/components/OfferRideForm";
 import { RideCard } from "@/components/RideCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Leaf, LogOut, Loader2, Home, CarFront, Settings } from "lucide-react";
+import { Plus, Search, Leaf, LogOut, Loader2, Home, CarFront, Settings, Moon, Sun } from "lucide-react";
 import { useRides } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import MyRides from "@/pages/MyRides";
@@ -14,6 +15,7 @@ import SettingsPage from "@/pages/Settings";
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
   const { profile, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [filterDirection, setFilterDirection] = useState<Ride["direction"]>("to-office");
   const [filterDate, setFilterDate] = useState(new Date().toISOString().split("T")[0]);
   const [showForm, setShowForm] = useState(false);
@@ -38,6 +40,13 @@ export default function Index() {
             {profile && (
               <span className="text-xs sm:text-sm opacity-80">{profile.name}</span>
             )}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="opacity-80 hover:opacity-100"
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             <button onClick={signOut} className="opacity-80 hover:opacity-100">
               <LogOut className="w-4 h-4" />
             </button>
