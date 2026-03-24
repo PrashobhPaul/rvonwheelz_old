@@ -83,9 +83,10 @@ export default function Index() {
               )}
             </div>
 
-            <footer className="text-center pt-6 pb-4 text-xs text-muted-foreground border-t">
+            <footer className="text-center pt-6 pb-4 text-xs text-muted-foreground border-t space-y-1">
               <p>🌱 Share rides, reduce emissions, save money</p>
-              <p className="mt-1">Open-source · Zero cost · Community driven</p>
+              <p>A strictly open-source & non-profit initiative</p>
+              <p>by <span className="font-medium text-foreground">Prashobh Paul</span> for Raheja Vistas Elite, Nacharam</p>
             </footer>
           </>
         ) : (
