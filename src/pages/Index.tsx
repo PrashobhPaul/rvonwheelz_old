@@ -29,14 +29,14 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background pb-16">
       <header className="sticky top-0 z-10 bg-primary px-4 py-4 text-primary-foreground">
-        <div className="container max-w-lg mx-auto flex items-center justify-between">
+        <div className="container max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Leaf className="w-6 h-6" />
             <h1 className="text-lg font-bold tracking-tight">RideShare</h1>
           </div>
           <div className="flex items-center gap-3">
             {profile && (
-              <span className="text-xs opacity-80">{profile.name}</span>
+              <span className="text-xs sm:text-sm opacity-80">{profile.name}</span>
             )}
             <button onClick={signOut} className="opacity-80 hover:opacity-100">
               <LogOut className="w-4 h-4" />
@@ -45,7 +45,7 @@ export default function Index() {
         </div>
       </header>
 
-      <main className="container max-w-lg mx-auto px-4 py-5 space-y-5">
+      <main className="container max-w-3xl mx-auto px-4 py-5 space-y-5">
         {activeTab === "home" ? (
           <>
             <DirectionToggle direction={filterDirection} onChange={setFilterDirection} />
@@ -77,9 +77,11 @@ export default function Index() {
               ) : (
                 <>
                   <p className="text-xs text-muted-foreground">{filtered.length} ride{filtered.length !== 1 ? "s" : ""} available</p>
-                  {filtered.map((ride) => (
-                    <RideCard key={ride.id} ride={ride} />
-                  ))}
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {filtered.map((ride) => (
+                      <RideCard key={ride.id} ride={ride} />
+                    ))}
+                  </div>
                 </>
               )}
             </div>
@@ -99,7 +101,7 @@ export default function Index() {
 
       {/* Bottom Tab Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-10 bg-card border-t border-border">
-        <div className="container max-w-lg mx-auto flex">
+        <div className="container max-w-3xl mx-auto flex">
           <button
             onClick={() => setActiveTab("home")}
             className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs transition-colors ${

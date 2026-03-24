@@ -49,7 +49,7 @@ export default function Settings() {
 
   if (authLoading && !profile) {
     return (
-      <Card>
+      <Card className="max-w-lg mx-auto">
         <CardHeader>
           <CardTitle className="text-lg">Profile Settings</CardTitle>
           <CardDescription>Loading your saved details...</CardDescription>
@@ -63,7 +63,7 @@ export default function Settings() {
   }
 
   return (
-    <Card>
+    <Card className="max-w-lg mx-auto">
       <CardHeader>
         <CardTitle className="text-lg">Profile Settings</CardTitle>
         <CardDescription>Update your personal details</CardDescription>
