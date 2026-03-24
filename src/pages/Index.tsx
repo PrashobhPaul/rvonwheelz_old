@@ -40,6 +40,13 @@ export default function Index() {
             {profile && (
               <span className="text-xs sm:text-sm opacity-80">{profile.name}</span>
             )}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="opacity-80 hover:opacity-100"
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             <button onClick={signOut} className="opacity-80 hover:opacity-100">
               <LogOut className="w-4 h-4" />
             </button>
