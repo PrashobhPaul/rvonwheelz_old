@@ -70,8 +70,8 @@ export default function Auth() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center space-y-2">
             <div className="flex items-center justify-center gap-2 text-primary">
-              <Leaf className="w-8 h-8" />
-              <span className="text-2xl font-bold">RideShare</span>
+              <img src="/images/logo.png" alt="RVonWheelz logo" className="w-10 h-10 rounded-lg" />
+              <span className="text-2xl font-bold">RVonWheelz</span>
             </div>
             <CardTitle className="text-lg">{isRegister ? "Create Account" : "Welcome Back"}</CardTitle>
             <CardDescription>

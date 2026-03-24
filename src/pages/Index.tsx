@@ -33,8 +33,8 @@ export default function Index() {
       <header className="sticky top-0 z-10 bg-primary px-4 py-4 text-primary-foreground">
         <div className="container max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Leaf className="w-6 h-6" />
-            <h1 className="text-lg font-bold tracking-tight">RideShare</h1>
+            <img src="/images/logo.png" alt="RVonWheelz logo" className="w-7 h-7 rounded" />
+            <h1 className="text-lg font-bold tracking-tight">RVonWheelz</h1>
           </div>
           <div className="flex items-center gap-3">
             {profile && (
