@@ -5,9 +5,10 @@ import { OfferRideForm } from "@/components/OfferRideForm";
 import { RideCard } from "@/components/RideCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Leaf, LogOut, Loader2 } from "lucide-react";
+import { Plus, Search, Leaf, LogOut, Loader2, Home, CarFront } from "lucide-react";
 import { useRides } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
+import MyRides from "@/pages/MyRides";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
@@ -15,6 +16,7 @@ export default function Index() {
   const [filterDirection, setFilterDirection] = useState<Ride["direction"]>("to-office");
   const [filterDate, setFilterDate] = useState(new Date().toISOString().split("T")[0]);
   const [showForm, setShowForm] = useState(false);
+  const [activeTab, setActiveTab] = useState<"home" | "my-rides">("home");
 
   const filtered = useMemo(() => {
     return rides
@@ -24,7 +26,7 @@ export default function Index() {
   }, [rides, filterDirection, filterDate]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16">
       <header className="sticky top-0 z-10 bg-primary px-4 py-4 text-primary-foreground">
         <div className="container max-w-lg mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -43,47 +45,77 @@ export default function Index() {
       </header>
 
       <main className="container max-w-lg mx-auto px-4 py-5 space-y-5">
-        <DirectionToggle direction={filterDirection} onChange={setFilterDirection} />
+        {activeTab === "home" ? (
+          <>
+            <DirectionToggle direction={filterDirection} onChange={setFilterDirection} />
 
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="pl-9 text-sm" />
-          </div>
-          <Button onClick={() => setShowForm(!showForm)} className="shrink-0">
-            <Plus className="w-4 h-4 mr-1" /> Offer Ride
-          </Button>
-        </div>
-
-        {showForm && <OfferRideForm onClose={() => setShowForm(false)} />}
-
-        <div className="space-y-3">
-          {isLoading ? (
-            <div className="text-center py-12">
-              <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Loading rides...</p>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="pl-9 text-sm" />
+              </div>
+              <Button onClick={() => setShowForm(!showForm)} className="shrink-0">
+                <Plus className="w-4 h-4 mr-1" /> Offer Ride
+              </Button>
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <CarIcon className="w-10 h-10 mx-auto mb-3 opacity-40" />
-              <p className="text-sm">No rides found for this date & direction.</p>
-              <p className="text-xs mt-1">Be the first to offer a ride!</p>
-            </div>
-          ) : (
-            <>
-              <p className="text-xs text-muted-foreground">{filtered.length} ride{filtered.length !== 1 ? "s" : ""} available</p>
-              {filtered.map((ride) => (
-                <RideCard key={ride.id} ride={ride} />
-              ))}
-            </>
-          )}
-        </div>
 
-        <footer className="text-center pt-6 pb-4 text-xs text-muted-foreground border-t">
-          <p>🌱 Share rides, reduce emissions, save money</p>
-          <p className="mt-1">Open-source · Zero cost · Community driven</p>
-        </footer>
+            {showForm && <OfferRideForm onClose={() => setShowForm(false)} />}
+
+            <div className="space-y-3">
+              {isLoading ? (
+                <div className="text-center py-12">
+                  <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">Loading rides...</p>
+                </div>
+              ) : filtered.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <CarIcon className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                  <p className="text-sm">No rides found for this date & direction.</p>
+                  <p className="text-xs mt-1">Be the first to offer a ride!</p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs text-muted-foreground">{filtered.length} ride{filtered.length !== 1 ? "s" : ""} available</p>
+                  {filtered.map((ride) => (
+                    <RideCard key={ride.id} ride={ride} />
+                  ))}
+                </>
+              )}
+            </div>
+
+            <footer className="text-center pt-6 pb-4 text-xs text-muted-foreground border-t">
+              <p>🌱 Share rides, reduce emissions, save money</p>
+              <p className="mt-1">Open-source · Zero cost · Community driven</p>
+            </footer>
+          </>
+        ) : (
+          <MyRides />
+        )}
       </main>
+
+      {/* Bottom Tab Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-10 bg-card border-t border-border">
+        <div className="container max-w-lg mx-auto flex">
+          <button
+            onClick={() => setActiveTab("home")}
+            className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs transition-colors ${
+              activeTab === "home" ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <Home className="w-5 h-5" />
+            All Rides
+          </button>
+          <button
+            onClick={() => setActiveTab("my-rides")}
+            className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs transition-colors ${
+              activeTab === "my-rides" ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <CarFront className="w-5 h-5" />
+            My Rides
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
