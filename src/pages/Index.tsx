@@ -5,10 +5,11 @@ import { OfferRideForm } from "@/components/OfferRideForm";
 import { RideCard } from "@/components/RideCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Leaf, LogOut, Loader2, Home, CarFront } from "lucide-react";
+import { Plus, Search, Leaf, LogOut, Loader2, Home, CarFront, Settings } from "lucide-react";
 import { useRides } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import MyRides from "@/pages/MyRides";
+import SettingsPage from "@/pages/Settings";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
@@ -16,7 +17,7 @@ export default function Index() {
   const [filterDirection, setFilterDirection] = useState<Ride["direction"]>("to-office");
   const [filterDate, setFilterDate] = useState(new Date().toISOString().split("T")[0]);
   const [showForm, setShowForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<"home" | "my-rides">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "my-rides" | "settings">("home");
 
   const filtered = useMemo(() => {
     return rides
@@ -89,8 +90,10 @@ export default function Index() {
               <p>by <span className="font-medium text-foreground">Prashobh Paul</span> for Raheja Vistas Elite, Nacharam</p>
             </footer>
           </>
-        ) : (
+        ) : activeTab === "my-rides" ? (
           <MyRides />
+        ) : (
+          <SettingsPage />
         )}
       </main>
 
@@ -114,6 +117,15 @@ export default function Index() {
           >
             <CarFront className="w-5 h-5" />
             My Rides
+          </button>
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs transition-colors ${
+              activeTab === "settings" ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <Settings className="w-5 h-5" />
+            Settings
           </button>
         </div>
       </nav>
