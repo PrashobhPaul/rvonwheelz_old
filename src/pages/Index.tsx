@@ -116,6 +116,15 @@ export default function Index() {
             <CarFront className="w-5 h-5" />
             My Rides
           </button>
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs transition-colors ${
+              activeTab === "settings" ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <Settings className="w-5 h-5" />
+            Settings
+          </button>
         </div>
       </nav>
     </div>
