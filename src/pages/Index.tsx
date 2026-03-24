@@ -5,10 +5,11 @@ import { OfferRideForm } from "@/components/OfferRideForm";
 import { RideCard } from "@/components/RideCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Leaf, LogOut, Loader2, Home, CarFront } from "lucide-react";
+import { Plus, Search, Leaf, LogOut, Loader2, Home, CarFront, Settings } from "lucide-react";
 import { useRides } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import MyRides from "@/pages/MyRides";
+import SettingsPage from "@/pages/Settings";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
