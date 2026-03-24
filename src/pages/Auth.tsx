@@ -109,8 +109,10 @@ export default function Auth() {
             </button>
           </div>
 
-          <footer className="text-center pt-4 text-xs text-muted-foreground border-t mt-4">
+          <footer className="text-center pt-4 text-xs text-muted-foreground border-t mt-4 space-y-1">
             <p>🌱 Share rides, reduce emissions, save money</p>
+            <p>A strictly open-source & non-profit initiative</p>
+            <p>by <span className="font-medium text-foreground">Prashobh Paul</span> for Raheja Vistas Elite, Nacharam</p>
           </footer>
         </CardContent>
       </Card>
