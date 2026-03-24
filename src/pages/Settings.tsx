@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,15 @@ export default function Settings() {
   const [block, setBlock] = useState(profile?.block ?? "");
   const [flatNumber, setFlatNumber] = useState(profile?.flat_number ?? "");
   const [phone, setPhone] = useState(profile?.phone ?? "");
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name);
+      setBlock(profile.block);
+      setFlatNumber(profile.flat_number);
+      setPhone(profile.phone);
+    }
+  }, [profile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
