@@ -14,7 +14,113 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          block: string
+          created_at: string
+          flat_number: string
+          id: string
+          name: string
+          phone: string
+          user_id: string
+        }
+        Insert: {
+          block: string
+          created_at?: string
+          flat_number: string
+          id?: string
+          name: string
+          phone: string
+          user_id: string
+        }
+        Update: {
+          block?: string
+          created_at?: string
+          flat_number?: string
+          id?: string
+          name?: string
+          phone?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ride_requests: {
+        Row: {
+          id: string
+          passenger_id: string
+          passenger_name: string
+          passenger_phone: string
+          requested_at: string
+          ride_id: string
+          status: string
+        }
+        Insert: {
+          id?: string
+          passenger_id: string
+          passenger_name: string
+          passenger_phone: string
+          requested_at?: string
+          ride_id: string
+          status?: string
+        }
+        Update: {
+          id?: string
+          passenger_id?: string
+          passenger_name?: string
+          passenger_phone?: string
+          requested_at?: string
+          ride_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_requests_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rides: {
+        Row: {
+          created_at: string
+          date: string
+          direction: string
+          id: string
+          name: string
+          phone: string
+          seats: number
+          time: string
+          user_id: string
+          vehicle: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          direction: string
+          id?: string
+          name: string
+          phone: string
+          seats: number
+          time: string
+          user_id: string
+          vehicle?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          direction?: string
+          id?: string
+          name?: string
+          phone?: string
+          seats?: number
+          time?: string
+          user_id?: string
+          vehicle?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
