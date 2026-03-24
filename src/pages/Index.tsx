@@ -3,19 +3,18 @@ import { Ride } from "@/lib/types";
 import { DirectionToggle } from "@/components/DirectionToggle";
 import { OfferRideForm } from "@/components/OfferRideForm";
 import { RideCard } from "@/components/RideCard";
-import { SettingsDialog } from "@/components/SettingsDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Leaf, Settings, Loader2 } from "lucide-react";
+import { Plus, Search, Leaf, LogOut, Loader2 } from "lucide-react";
 import { useRides } from "@/hooks/useRides";
-import { isGoogleSheetsMode } from "@/lib/config";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
+  const { profile, signOut } = useAuth();
   const [filterDirection, setFilterDirection] = useState<Ride["direction"]>("to-office");
   const [filterDate, setFilterDate] = useState(new Date().toISOString().split("T")[0]);
   const [showForm, setShowForm] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
 
   const filtered = useMemo(() => {
     return rides
@@ -23,8 +22,6 @@ export default function Index() {
       .filter((r) => !filterDate || r.date === filterDate)
       .sort((a, b) => a.time.localeCompare(b.time));
   }, [rides, filterDirection, filterDate]);
-
-  const sheetsMode = isGoogleSheetsMode();
 
   return (
     <div className="min-h-screen bg-background">
@@ -34,12 +31,12 @@ export default function Index() {
             <Leaf className="w-6 h-6" />
             <h1 className="text-lg font-bold tracking-tight">RideShare</h1>
           </div>
-          <div className="flex items-center gap-2">
-            {sheetsMode && (
-              <span className="text-[10px] bg-primary-foreground/20 px-1.5 py-0.5 rounded">☁ Shared</span>
+          <div className="flex items-center gap-3">
+            {profile && (
+              <span className="text-xs opacity-80">{profile.name}</span>
             )}
-            <button onClick={() => setShowSettings(true)} className="opacity-80 hover:opacity-100">
-              <Settings className="w-4 h-4" />
+            <button onClick={signOut} className="opacity-80 hover:opacity-100">
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -68,7 +65,7 @@ export default function Index() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              <Car className="w-10 h-10 mx-auto mb-3 opacity-40" />
+              <CarIcon className="w-10 h-10 mx-auto mb-3 opacity-40" />
               <p className="text-sm">No rides found for this date & direction.</p>
               <p className="text-xs mt-1">Be the first to offer a ride!</p>
             </div>
@@ -87,13 +84,11 @@ export default function Index() {
           <p className="mt-1">Open-source · Zero cost · Community driven</p>
         </footer>
       </main>
-
-      {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
     </div>
   );
 }
 
-function Car(props: React.SVGProps<SVGSVGElement>) {
+function CarIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
       <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-2-2.2-3.3C13 5.6 12 5 11 5H5c-1 0-2 .5-2.8 1.3L0 9h3c.6 0 1 .4 1 1v7" />

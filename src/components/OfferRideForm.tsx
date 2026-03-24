@@ -15,8 +15,6 @@ interface OfferRideFormProps {
 
 export function OfferRideForm({ onClose }: OfferRideFormProps) {
   const [direction, setDirection] = useState<Ride["direction"]>("to-office");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [time, setTime] = useState("08:30");
   const [seats, setSeats] = useState(2);
@@ -25,22 +23,18 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !phone.trim() || phone.trim().length < 10) {
-      toast.error("Please enter a valid name and 10-digit phone number");
-      return;
-    }
     if (!canCreateRide(date, time)) {
       toast.error("Cannot create a ride that starts within 30 minutes");
       return;
     }
     mutation.mutate(
-      { name: name.trim(), phone: phone.trim(), direction, date, time, seats, vehicle: vehicle.trim() || "Car" },
+      { direction, date, time, seats, vehicle: vehicle.trim() || "Car" },
       {
         onSuccess: () => {
           toast.success("Ride offered successfully!");
           onClose();
         },
-        onError: () => toast.error("Failed to create ride"),
+        onError: (err) => toast.error(err.message || "Failed to create ride"),
       }
     );
   };
@@ -59,16 +53,6 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <DirectionToggle direction={direction} onChange={setDirection} />
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" required maxLength={50} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit number" required />
-            </div>
-          </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="date">Date</Label>
