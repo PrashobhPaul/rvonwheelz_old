@@ -8,6 +8,20 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
+const hasRecoveryTokens = () => {
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const searchParams = new URLSearchParams(window.location.search);
+
+  return [hashParams, searchParams].some(
+    (params) =>
+      params.get("type") === "recovery" ||
+      Boolean(params.get("access_token")) ||
+      Boolean(params.get("refresh_token")) ||
+      Boolean(params.get("token_hash")) ||
+      Boolean(params.get("code")),
+  );
+};
+
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -16,20 +30,32 @@ export default function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Listen for the PASSWORD_RECOVERY event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
+    const markRecovery = () => {
+      if (hasRecoveryTokens()) {
+        setIsRecovery(true);
+      }
+    };
+
+    markRecovery();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session && hasRecoveryTokens())) {
         setIsRecovery(true);
       }
     });
 
-    // Also check hash for type=recovery
-    const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
-      setIsRecovery(true);
-    }
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session && hasRecoveryTokens()) {
+        setIsRecovery(true);
+      }
+    });
 
-    return () => subscription.unsubscribe();
+    window.addEventListener("hashchange", markRecovery);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("hashchange", markRecovery);
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

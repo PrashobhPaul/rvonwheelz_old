@@ -44,34 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let isMounted = true;
 
-    const initializeAuth = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (!isMounted) return;
-
-        const nextUser = session?.user ?? null;
-        setUser(nextUser);
-
-        if (nextUser) {
-          await fetchProfile(nextUser.id);
-        } else {
-          setProfile(null);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void initializeAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const handleSessionChange = (session: { user: User | null } | null) => {
       const nextUser = session?.user ?? null;
       setUser(nextUser);
 
@@ -93,7 +66,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setLoading(false);
           }
         });
+    };
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      handleSessionChange(session);
     });
+
+    const initializeAuth = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!isMounted) return;
+        handleSessionChange(session);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void initializeAuth();
 
     return () => {
       isMounted = false;

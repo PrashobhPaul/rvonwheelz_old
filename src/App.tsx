@@ -14,6 +14,11 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const isPasswordRecoveryRoute = () => {
+  if (typeof window === "undefined") return false;
+  return window.location.pathname === "/reset-password";
+};
+
 function AppRoutes() {
   const { user, loading } = useAuth();
 
@@ -30,6 +35,15 @@ function AppRoutes() {
       <Routes>
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Auth />} />
+      </Routes>
+    );
+  }
+
+  if (isPasswordRecoveryRoute()) {
+    return (
+      <Routes>
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     );
   }
