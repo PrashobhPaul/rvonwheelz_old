@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,25 @@ export default function Auth() {
   const [block, setBlock] = useState("");
   const [flatNumber, setFlatNumber] = useState("");
   const [phone, setPhone] = useState("");
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast.error("Please enter your email address first");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Password reset link sent! Check your email.");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send reset email");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,6 +136,17 @@ export default function Auth() {
                 {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                 {isRegister ? "Register" : "Login"}
               </Button>
+
+              {!isRegister && (
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="w-full text-sm text-muted-foreground hover:text-primary hover:underline mt-2"
+                  disabled={loading}
+                >
+                  Forgot password?
+                </button>
+              )}
             </form>
 
             <div className="mt-4 text-center">

@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import { RideNotificationListener } from "@/components/RideNotificationListener";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,7 +25,14 @@ function AppRoutes() {
     );
   }
 
-  if (!user) return <Auth />;
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<Auth />} />
+      </Routes>
+    );
+  }
 
   return (
     <>
