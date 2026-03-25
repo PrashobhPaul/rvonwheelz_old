@@ -116,6 +116,17 @@ export default function Auth() {
                 {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                 {isRegister ? "Register" : "Login"}
               </Button>
+
+              {!isRegister && (
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="w-full text-sm text-muted-foreground hover:text-primary hover:underline mt-2"
+                  disabled={loading}
+                >
+                  Forgot password?
+                </button>
+              )}
             </form>
 
             <div className="mt-4 text-center">
