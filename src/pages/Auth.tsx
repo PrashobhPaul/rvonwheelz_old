@@ -53,6 +53,8 @@ export default function Auth() {
           block: block.trim(),
           flat_number: flatNumber.trim(),
           phone: phone.trim(),
+          vehicle_name: "",
+          registration_number: "",
         });
         toast.success("Registration successful! You're now logged in.");
       } else {
