@@ -24,6 +24,12 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
   const [vehicle, setVehicle] = useState("");
   const mutation = useCreateRide();
 
+  useEffect(() => {
+    if (profile?.vehicle_name && !vehicle) {
+      setVehicle(profile.vehicle_name);
+    }
+  }, [profile]);
+
   const handleVehicleTypeChange = (type: "car" | "bike") => {
     setVehicleType(type);
     setSeats(type === "car" ? 3 : 1);
