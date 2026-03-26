@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Ride, canCreateRide } from "@/lib/types";
 import { DirectionToggle } from "./DirectionToggle";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,12 +15,25 @@ interface OfferRideFormProps {
 }
 
 export function OfferRideForm({ onClose }: OfferRideFormProps) {
+  const { profile } = useAuth();
   const [direction, setDirection] = useState<Ride["direction"]>("to-office");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [time, setTime] = useState("08:30");
-  const [seats, setSeats] = useState(2);
+  const [vehicleType, setVehicleType] = useState<"car" | "bike">("car");
+  const [seats, setSeats] = useState(3);
   const [vehicle, setVehicle] = useState("");
   const mutation = useCreateRide();
+
+  useEffect(() => {
+    if (profile?.vehicle_name && !vehicle) {
+      setVehicle(profile.vehicle_name);
+    }
+  }, [profile]);
+
+  const handleVehicleTypeChange = (type: "car" | "bike") => {
+    setVehicleType(type);
+    setSeats(type === "car" ? 3 : 1);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +67,13 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <DirectionToggle direction={direction} onChange={setDirection} />
+          <div className="space-y-1.5">
+            <Label>Vehicle Type</Label>
+            <div className="flex gap-2">
+              <Button type="button" variant={vehicleType === "car" ? "default" : "outline"} size="sm" onClick={() => handleVehicleTypeChange("car")} className="flex-1">🚗 Car</Button>
+              <Button type="button" variant={vehicleType === "bike" ? "default" : "outline"} size="sm" onClick={() => handleVehicleTypeChange("bike")} className="flex-1">🏍️ Bike</Button>
+            </div>
+          </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="date">Date</Label>
@@ -64,12 +85,12 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="seats">Seats</Label>
-              <Input id="seats" type="number" min={1} max={6} value={seats} onChange={(e) => setSeats(Number(e.target.value))} required />
+              <Input id="seats" type="number" min={1} max={vehicleType === "car" ? 6 : 2} value={seats} onChange={(e) => setSeats(Number(e.target.value))} required />
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="vehicle">Vehicle (optional)</Label>
-            <Input id="vehicle" value={vehicle} onChange={(e) => setVehicle(e.target.value)} placeholder="e.g. Car - Hyundai i20" maxLength={50} />
+            <Label htmlFor="vehicle">Vehicle Name (optional)</Label>
+            <Input id="vehicle" value={vehicle} onChange={(e) => setVehicle(e.target.value)} placeholder={vehicleType === "car" ? "e.g. Hyundai i20" : "e.g. Honda Activa"} maxLength={50} />
           </div>
           <Button type="submit" className="w-full" disabled={mutation.isPending}>
             {mutation.isPending ? "Creating..." : "Offer Ride"}

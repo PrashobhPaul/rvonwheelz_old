@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users, Car, Phone, Trash2, ArrowRight, ArrowLeft, UserPlus, Check, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { useRequests, useDeleteRide, useCreateRequest, useUpdateRequestStatus } from "@/hooks/useRides";
+import { useRequests, useDeleteRide, useCreateRequest, useUpdateRequestStatus, useProfile } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 
 interface RideCardProps {
@@ -28,6 +28,7 @@ export function RideCard({ ride }: RideCardProps) {
   const { user } = useAuth();
 
   const { data: requests = [] } = useRequests(ride.id);
+  const { data: driverProfile } = useProfile(ride.user_id);
   const deleteMutation = useDeleteRide();
   const requestMutation = useCreateRequest();
   const statusMutation = useUpdateRequestStatus();
@@ -110,6 +111,9 @@ export function RideCard({ ride }: RideCardProps) {
         <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
           <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{ride.date} · {ride.time}</span>
           <span className="flex items-center gap-1"><Car className="w-3.5 h-3.5" />{ride.vehicle || "Car"}</span>
+          {driverProfile?.registration_number && (
+            <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{driverProfile.registration_number}</span>
+          )}
         </div>
 
         {!isPast && minutesUntil < 30 && minutesUntil > 0 && (

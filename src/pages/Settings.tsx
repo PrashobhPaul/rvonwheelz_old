@@ -14,6 +14,8 @@ export default function Settings() {
   const [block, setBlock] = useState("");
   const [flatNumber, setFlatNumber] = useState("");
   const [phone, setPhone] = useState("");
+  const [vehicleName, setVehicleName] = useState("");
+  const [registrationNumber, setRegistrationNumber] = useState("");
 
   useEffect(() => {
     if (profile) {
@@ -21,6 +23,8 @@ export default function Settings() {
       setBlock(profile.block);
       setFlatNumber(profile.flat_number);
       setPhone(profile.phone);
+      setVehicleName(profile.vehicle_name || "");
+      setRegistrationNumber(profile.registration_number || "");
     }
   }, [profile]);
 
@@ -38,6 +42,8 @@ export default function Settings() {
         block: block.trim(),
         flat_number: flatNumber.trim(),
         phone: phone.trim(),
+        vehicle_name: vehicleName.trim(),
+        registration_number: registrationNumber.trim(),
       });
       toast.success("Profile updated!");
     } catch (err: any) {
@@ -87,6 +93,14 @@ export default function Settings() {
           <div className="space-y-1.5">
             <Label htmlFor="s-phone">Mobile Number</Label>
             <Input id="s-phone" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit number" required />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="s-vehicle">Vehicle Name</Label>
+            <Input id="s-vehicle" value={vehicleName} onChange={(e) => setVehicleName(e.target.value)} placeholder="e.g. Hyundai i20, Honda Activa" maxLength={50} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="s-reg">Registration Number</Label>
+            <Input id="s-reg" value={registrationNumber} onChange={(e) => setRegistrationNumber(e.target.value.toUpperCase())} placeholder="e.g. TS09EA1234" maxLength={15} />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
