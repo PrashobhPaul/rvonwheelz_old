@@ -27,34 +27,51 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [ready, setReady] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const markRecovery = () => {
-      if (hasRecoveryTokens()) {
+    let cancelled = false;
+
+    const recover = async () => {
+      const url = new URL(window.location.href);
+      const code = url.searchParams.get("code");
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const type = url.searchParams.get("type") || hashParams.get("type");
+
+      // PKCE flow: exchange code for session
+      if (code) {
+        try {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (!error && !cancelled) {
+            setIsRecovery(true);
+          }
+        } catch {
+          // code invalid/expired — fall through to invalid state
+        }
+      }
+
+      // Implicit flow: tokens in hash
+      if (!cancelled && hasRecoveryTokens()) {
         setIsRecovery(true);
       }
+
+      if (!cancelled) setReady(true);
     };
 
-    markRecovery();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (cancelled) return;
       if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session && hasRecoveryTokens())) {
         setIsRecovery(true);
+        setReady(true);
       }
     });
 
-    void supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && hasRecoveryTokens()) {
-        setIsRecovery(true);
-      }
-    });
-
-    window.addEventListener("hashchange", markRecovery);
+    void recover();
 
     return () => {
+      cancelled = true;
       subscription.unsubscribe();
-      window.removeEventListener("hashchange", markRecovery);
     };
   }, []);
 
@@ -81,6 +98,14 @@ export default function ResetPassword() {
       setLoading(false);
     }
   };
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!isRecovery) {
     return (
