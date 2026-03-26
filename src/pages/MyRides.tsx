@@ -3,8 +3,9 @@ import { useRides, useRequests } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import { RideCard } from "@/components/RideCard";
 import { Badge } from "@/components/ui/badge";
-import { Car, TicketCheck, Loader2 } from "lucide-react";
+import { Car, TicketCheck, Loader2, TrendingUp, UserCheck } from "lucide-react";
 import { getDirectionShort } from "@/lib/types";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function MyRides() {
   const { user } = useAuth();
@@ -24,6 +25,9 @@ export default function MyRides() {
     })).sort((a, b) => (b.requested_at || "").localeCompare(a.requested_at || ""));
   }, [allRequests, rides, user]);
 
+  const ridesGivenCount = myRides.length;
+  const ridesTakenCount = myRequests.filter((r) => r.status === "approved").length;
+
   const isLoading = ridesLoading || reqLoading;
 
   if (isLoading) {
@@ -37,6 +41,32 @@ export default function MyRides() {
 
   return (
     <div className="space-y-6">
+      {/* Ride Stats */}
+      <div className="grid grid-cols-2 gap-3">
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="rounded-full bg-primary/10 p-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-foreground">{ridesGivenCount}</p>
+              <p className="text-xs text-muted-foreground">Rides Given</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="rounded-full bg-primary/10 p-2">
+              <UserCheck className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-foreground">{ridesTakenCount}</p>
+              <p className="text-xs text-muted-foreground">Rides Taken</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* My Offered Rides */}
       <section className="space-y-3">
         <div className="flex items-center gap-2">
