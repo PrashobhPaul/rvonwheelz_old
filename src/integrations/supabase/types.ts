@@ -92,6 +92,7 @@ export type Database = {
         Row: {
           created_at: string
           date: string
+          destination: string
           direction: string
           id: string
           name: string
@@ -104,6 +105,7 @@ export type Database = {
         Insert: {
           created_at?: string
           date: string
+          destination?: string
           direction: string
           id?: string
           name: string
@@ -116,6 +118,7 @@ export type Database = {
         Update: {
           created_at?: string
           date?: string
+          destination?: string
           direction?: string
           id?: string
           name?: string
