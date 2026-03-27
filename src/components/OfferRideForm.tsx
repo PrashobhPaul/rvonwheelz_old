@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Ride, canCreateRide } from "@/lib/types";
+import { Ride, canCreateRide, DESTINATIONS, DEFAULT_DESTINATION } from "@/lib/types";
 import { DirectionToggle } from "./DirectionToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Car, X } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateRide } from "@/hooks/useRides";
@@ -17,6 +18,7 @@ interface OfferRideFormProps {
 export function OfferRideForm({ onClose }: OfferRideFormProps) {
   const { profile } = useAuth();
   const [direction, setDirection] = useState<Ride["direction"]>("to-office");
+  const [destination, setDestination] = useState(DEFAULT_DESTINATION);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [time, setTime] = useState("08:30");
   const [vehicleType, setVehicleType] = useState<"car" | "bike">("car");
@@ -42,7 +44,7 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
       return;
     }
     mutation.mutate(
-      { direction, date, time, seats, vehicle: vehicle.trim() || "Car" },
+      { direction, destination, date, time, seats, vehicle: vehicle.trim() || "Car" },
       {
         onSuccess: () => {
           toast.success("Ride offered successfully!");
@@ -66,7 +68,24 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <DirectionToggle direction={direction} onChange={setDirection} />
+          <div className="space-y-1.5">
+            <Label>Destination</Label>
+            <Select value={destination} onValueChange={setDestination}>
+              <SelectTrigger className="text-sm">
+                <SelectValue placeholder="Select destination" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {DESTINATIONS.map((d) => (
+                  <SelectItem key={d} value={d} className="text-sm">
+                    {d}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DirectionToggle direction={direction} onChange={setDirection} destination={destination} />
+
           <div className="space-y-1.5">
             <Label>Vehicle Type</Label>
             <div className="flex gap-2">

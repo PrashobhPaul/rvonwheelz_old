@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
 import { useTheme } from "next-themes";
-import { Ride } from "@/lib/types";
+import { Ride, DESTINATIONS, DEFAULT_DESTINATION } from "@/lib/types";
 import { DirectionToggle } from "@/components/DirectionToggle";
 import { OfferRideForm } from "@/components/OfferRideForm";
 import { RideCard } from "@/components/RideCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Leaf, LogOut, Loader2, Home, CarFront, Settings, Moon, Sun } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Search, LogOut, Loader2, Home, CarFront, Settings, Moon, Sun } from "lucide-react";
 import { useRides } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import MyRides from "@/pages/MyRides";
@@ -17,6 +18,7 @@ export default function Index() {
   const { profile, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const [filterDirection, setFilterDirection] = useState<Ride["direction"]>("to-office");
+  const [filterDestination, setFilterDestination] = useState<string>("all");
   const [filterDate, setFilterDate] = useState(new Date().toISOString().split("T")[0]);
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"home" | "my-rides" | "settings">("home");
@@ -25,8 +27,9 @@ export default function Index() {
     return rides
       .filter((r) => r.direction === filterDirection)
       .filter((r) => !filterDate || r.date === filterDate)
+      .filter((r) => filterDestination === "all" || r.destination === filterDestination)
       .sort((a, b) => a.time.localeCompare(b.time));
-  }, [rides, filterDirection, filterDate]);
+  }, [rides, filterDirection, filterDate, filterDestination]);
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -57,16 +60,34 @@ export default function Index() {
       <main className="container max-w-3xl mx-auto px-4 py-5 space-y-5">
         {activeTab === "home" ? (
           <>
-            <DirectionToggle direction={filterDirection} onChange={setFilterDirection} />
+            <DirectionToggle
+              direction={filterDirection}
+              onChange={setFilterDirection}
+              destination={filterDestination !== "all" ? filterDestination : undefined}
+            />
 
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="pl-9 text-sm" />
+            <div className="space-y-2">
+              <Select value={filterDestination} onValueChange={setFilterDestination}>
+                <SelectTrigger className="text-sm">
+                  <SelectValue placeholder="All destinations" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  <SelectItem value="all">All Destinations</SelectItem>
+                  {DESTINATIONS.map((d) => (
+                    <SelectItem key={d} value={d} className="text-sm">{d}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="pl-9 text-sm" />
+                </div>
+                <Button onClick={() => setShowForm(!showForm)} className="shrink-0">
+                  <Plus className="w-4 h-4 mr-1" /> Offer Ride
+                </Button>
               </div>
-              <Button onClick={() => setShowForm(!showForm)} className="shrink-0">
-                <Plus className="w-4 h-4 mr-1" /> Offer Ride
-              </Button>
             </div>
 
             {showForm && <OfferRideForm onClose={() => setShowForm(false)} />}

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRides, useRequests, useProfile } from "@/hooks/useRides";
-import { getDirectionShort } from "@/lib/types";
+import { getDirectionShort, HOME_LOCATION } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -147,6 +147,13 @@ export default function PublicProfile() {
                         <span>{ride.vehicle || "Car"}</span>
                         <span>· {ride.seats} seat{ride.seats !== 1 ? "s" : ""}</span>
                       </div>
+                      {ride.destination && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          {ride.direction === "to-office"
+                            ? `→ ${ride.destination}`
+                            : `${ride.destination} →`}
+                        </p>
+                      )}
                     </div>
                     <Badge variant="outline" className="text-xs">
                       <ArrowRight className="w-3 h-3 mr-1" />

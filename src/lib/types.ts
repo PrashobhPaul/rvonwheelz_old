@@ -3,6 +3,7 @@ export interface Ride {
   name: string;
   phone: string;
   direction: "to-office" | "to-home";
+  destination: string;
   date: string;
   time: string;
   seats: number;
@@ -19,19 +20,63 @@ export interface RideRequest {
   requestedAt: string;
 }
 
+export const HOME_LOCATION = "Raheja Vistas Elite, Nacharam";
+
+export const DESTINATIONS = [
+  "HITEC City – Mindspace Main Gate",
+  "Raidurg – Metro Station Gate",
+  "HITEC City – ITC Kohenur Junction",
+  "Nanakramguda – Sattva Knowledge City Main Gate",
+  "Raidurg – Knowledge City Gate 3 & 4",
+  "HITEC City – iLabs / Inorbit Mall Junction",
+  "HITEC City – Cyber Towers Junction",
+  "HITEC City – Metro Station",
+  "Financial District – Wipro Circle Junction",
+  "Financial District – Nanakramguda Main Junction",
+  "Financial District – WaveRock SEZ Entry",
+  "Financial District – TSIIC Layout Entry",
+  "Financial District – Salarpuria Sattva Campus",
+  "Gachibowli – DLF Cyber City Gate",
+  "Gachibowli – Flyover Junction",
+  "Gachibowli – Biodiversity Junction",
+  "Kondapur – Botanical Garden Entrance",
+  "Kothaguda – Junction",
+  "HITEC City – IKEA Circle Junction",
+  "Jubilee Hills – Checkpost Junction",
+  "Shamirpet – Genome Valley Main Gate",
+  "Shamirpet – IKP Knowledge Park Entry",
+  "Shamirpet – Main Junction",
+  "Jeedimetla – Bus Depot Junction",
+  "Balanagar – X Roads Junction",
+  "Sanathnagar – Industrial Area Gate",
+  "Shamshabad – RGIA Airport Departures Gate",
+  "Shamshabad – GMR AeroCity Entrance",
+  "Shamshabad – Hardware Park Main Gate",
+  "Adibatla – Aerospace SEZ Entry",
+  "Adibatla – TCS Campus Gate",
+  "Kukatpally – JNTU Main Gate",
+  "Kukatpally – Y Junction",
+  "Miyapur – Metro Station",
+  "KPHB – Main Circle Junction",
+] as const;
+
+export const DEFAULT_DESTINATION = "Nanakramguda – Sattva Knowledge City Main Gate";
+
+// Keep backward compat
 export const LOCATIONS = {
-  home: "Raheja Vistas Nacharam",
-  office: "Sattva Knowledge City Gate 2",
+  home: HOME_LOCATION,
+  office: DEFAULT_DESTINATION,
 } as const;
 
-export function getDirectionLabel(direction: Ride["direction"]) {
+export function getDirectionLabel(direction: Ride["direction"], destination?: string) {
+  const dest = destination || DEFAULT_DESTINATION;
   return direction === "to-office"
-    ? `${LOCATIONS.home} → ${LOCATIONS.office}`
-    : `${LOCATIONS.office} → ${LOCATIONS.home}`;
+    ? `${HOME_LOCATION} → ${dest}`
+    : `${dest} → ${HOME_LOCATION}`;
 }
 
 export function getDirectionShort(direction: Ride["direction"]) {
-  return direction === "to-office" ? "To Office" : "To Home";
+  return direction === "to-office" ? "To Destination" : "To Home";
 }
 
 /** Minutes remaining until ride starts */

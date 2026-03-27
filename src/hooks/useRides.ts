@@ -52,7 +52,7 @@ export function useCreateRide() {
   const qc = useQueryClient();
   const { user, profile } = useAuth();
   return useMutation({
-    mutationFn: async (ride: { direction: string; date: string; time: string; seats: number; vehicle: string }) => {
+    mutationFn: async (ride: { direction: string; destination: string; date: string; time: string; seats: number; vehicle: string }) => {
       if (!user || !profile) throw new Error("Not authenticated");
       const { data, error } = await supabase.from("rides").insert({
         user_id: user.id,
