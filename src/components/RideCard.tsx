@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { getDirectionShort, canRejectPassenger, canCancelRequest, getMinutesUntilRide } from "@/lib/types";
+import { getDirectionShort, canRejectPassenger, canCancelRequest, getMinutesUntilRide, HOME_LOCATION } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ interface RideCardProps {
     name: string;
     phone: string;
     direction: string;
+    destination: string;
     date: string;
     time: string;
     seats: number;
@@ -107,6 +108,13 @@ export function RideCard({ ride }: RideCardProps) {
             </Badge>
           </div>
         </div>
+
+        {/* Destination */}
+        <p className="text-xs text-muted-foreground truncate">
+          {ride.direction === "to-office"
+            ? `${HOME_LOCATION} → ${ride.destination || "Destination"}`
+            : `${ride.destination || "Destination"} → ${HOME_LOCATION}`}
+        </p>
 
         {/* Details */}
         <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">

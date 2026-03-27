@@ -1,0 +1,1 @@
+ALTER TABLE public.rides ADD COLUMN destination text NOT NULL DEFAULT 'Nanakramguda – Sattva Knowledge City Main Gate';
