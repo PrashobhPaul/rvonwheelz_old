@@ -9,7 +9,7 @@ export function useProfile(userId?: string) {
       if (!userId) return null;
       const { data, error } = await supabase
         .from("profiles")
-        .select("vehicle_name, registration_number")
+        .select("name, block, flat_number, phone, vehicle_name, registration_number")
         .eq("user_id", userId)
         .maybeSingle();
       if (error) throw error;

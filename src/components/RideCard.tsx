@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { getDirectionShort, canRejectPassenger, canCancelRequest, getMinutesUntilRide } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -97,7 +98,7 @@ export function RideCard({ ride }: RideCardProps) {
       <CardContent className="p-4 space-y-3">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <span className="font-semibold text-foreground">{ride.name}</span>
+          <Link to={`/profile/${ride.user_id}`} className="font-semibold text-foreground hover:text-primary transition-colors underline-offset-2 hover:underline">{ride.name}</Link>
           <div className="flex items-center gap-1.5">
             <Badge variant="outline" className="text-xs">{availableSeats}/{ride.seats} seats</Badge>
             <Badge variant="secondary" className="text-xs">

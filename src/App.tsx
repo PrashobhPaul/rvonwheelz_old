@@ -10,6 +10,7 @@ import { RideNotificationListener } from "@/components/RideNotificationListener"
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
+import PublicProfile from "./pages/PublicProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ function AppRoutes() {
       <RideNotificationListener />
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/profile/:userId" element={<PublicProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
