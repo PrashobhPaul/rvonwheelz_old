@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useRides, useRequests } from "@/hooks/useRides";
+import { useRides, useRequests, useCompletionStats } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import { RideCard } from "@/components/RideCard";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ export default function MyRides() {
   const { user } = useAuth();
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
+  const { data: completionStats } = useCompletionStats(user?.id);
 
   const myRides = useMemo(
     () => rides.filter((r) => r.user_id === user?.id).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)),
@@ -25,8 +26,12 @@ export default function MyRides() {
     })).sort((a, b) => (b.requested_at || "").localeCompare(a.requested_at || ""));
   }, [allRequests, rides, user]);
 
-  const ridesGivenCount = myRides.length;
-  const ridesTakenCount = myRequests.filter((r) => r.status === "approved").length;
+  // Current active rides + historical completions
+  const now = new Date();
+  const activePastGiven = myRides.filter((r) => new Date(`${r.date}T${r.time}`) < now).length;
+  const activePastTaken = myRequests.filter((r) => r.status === "approved" && r.ride && new Date(`${r.ride.date}T${r.ride.time}`) < now).length;
+  const ridesGivenCount = (completionStats?.ridesGiven || 0) + activePastGiven;
+  const ridesTakenCount = (completionStats?.ridesTaken || 0) + activePastTaken;
 
   const isLoading = ridesLoading || reqLoading;
 

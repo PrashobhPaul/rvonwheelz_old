@@ -36,7 +36,8 @@ export function RideCard({ ride }: RideCardProps) {
   const statusMutation = useUpdateRequestStatus();
 
   const isToOffice = ride.direction === "to-office";
-  const approvedCount = requests.filter((r) => r.status === "approved").length;
+  const approvedRequests = requests.filter((r) => r.status === "approved");
+  const approvedCount = approvedRequests.length;
   const availableSeats = ride.seats - approvedCount;
   const rideForTime = { date: ride.date, time: ride.time, direction: ride.direction as "to-office" | "to-home" } as any;
   const minutesUntil = getMinutesUntilRide({ ...rideForTime, id: ride.id, name: ride.name, phone: ride.phone, seats: ride.seats, vehicle: ride.vehicle, createdAt: ride.created_at });

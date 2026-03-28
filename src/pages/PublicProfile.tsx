@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useRides, useRequests, useProfile } from "@/hooks/useRides";
+import { useRides, useRequests, useProfile, useCompletionStats } from "@/hooks/useRides";
 import { getDirectionShort, HOME_LOCATION } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,18 +14,24 @@ export default function PublicProfile() {
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
+  const { data: completionStats } = useCompletionStats(userId);
 
   const userRides = useMemo(
     () => rides.filter((r) => r.user_id === userId).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)),
     [rides, userId]
   );
 
-  const ridesGivenCount = userRides.length;
+  const now = new Date();
+  const activePastGiven = userRides.filter((r) => new Date(`${r.date}T${r.time}`) < now).length;
+  const ridesGivenCount = (completionStats?.ridesGiven || 0) + activePastGiven;
 
-  const ridesTakenCount = useMemo(
-    () => allRequests.filter((r) => r.passenger_id === userId && r.status === "approved").length,
-    [allRequests, userId]
-  );
+  const ridesTakenCount = useMemo(() => {
+    const activePastTaken = allRequests.filter((r) => r.passenger_id === userId && r.status === "approved").filter((r) => {
+      const ride = rides.find((ri) => ri.id === r.ride_id);
+      return ride && new Date(`${ride.date}T${ride.time}`) < now;
+    }).length;
+    return (completionStats?.ridesTaken || 0) + activePastTaken;
+  }, [allRequests, rides, userId, completionStats, now]);
 
   const isLoading = profileLoading || ridesLoading || reqLoading;
 
