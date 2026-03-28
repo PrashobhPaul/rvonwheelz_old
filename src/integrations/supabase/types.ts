@@ -50,6 +50,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ride_completion_log: {
+        Row: {
+          created_at: string | null
+          destination: string | null
+          direction: string | null
+          id: string
+          ride_date: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          destination?: string | null
+          direction?: string | null
+          id?: string
+          ride_date: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          destination?: string | null
+          direction?: string | null
+          id?: string
+          ride_date?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ride_requests: {
         Row: {
           id: string
