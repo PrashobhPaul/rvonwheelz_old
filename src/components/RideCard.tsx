@@ -131,6 +131,23 @@ export function RideCard({ ride }: RideCardProps) {
           </div>
         )}
 
+        {/* Co-commuters: show approved passengers to everyone */}
+        {approvedRequests.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            <Users className="w-3.5 h-3.5 text-primary" />
+            <span className="font-medium">Co-commuters:</span>
+            {approvedRequests.map((req) => (
+              <Link
+                key={req.id}
+                to={`/profile/${req.passenger_id}`}
+                className="inline-flex items-center bg-muted px-1.5 py-0.5 rounded hover:bg-primary/10 transition-colors"
+              >
+                {req.passenger_name}
+              </Link>
+            ))}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex flex-wrap gap-2">
           {showPhone ? (
@@ -143,15 +160,13 @@ export function RideCard({ ride }: RideCardProps) {
             </Button>
           )}
 
-          {/* Request seat (only if not owner, not past, seats available) */}
           {!isOwner && !isPast && availableSeats > 0 && (!myRequest || myRequest.status === "cancelled" || myRequest.status === "rejected") && (
             <Button variant="default" size="sm" onClick={handleRequest} disabled={requestMutation.isPending} className="text-xs">
               <UserPlus className="w-3.5 h-3.5 mr-1" /> {requestMutation.isPending ? "Sending..." : "Request Seat"}
             </Button>
           )}
 
-          {/* Show my request status */}
-          {myRequest && myRequest.status !== "cancelled" && myRequest.status !== "rejected" && (
+          {myRequest && myRequest.status !== "cancelled" && myRequest.status !== "rejected" && myRequest.status !== "cancelled_by_driver" && (
             <div className="flex items-center gap-2">
               <Badge variant={myRequest.status === "approved" ? "default" : "secondary"} className="text-xs">
                 {myRequest.status === "approved" ? "✅ Approved" : "⏳ Pending"}
@@ -164,7 +179,6 @@ export function RideCard({ ride }: RideCardProps) {
             </div>
           )}
 
-          {/* Owner actions */}
           {isOwner && (
             <Button variant="ghost" size="sm" onClick={handleDelete} disabled={deleteMutation.isPending} className="text-xs text-muted-foreground ml-auto">
               <Trash2 className="w-3.5 h-3.5" />
@@ -182,7 +196,9 @@ export function RideCard({ ride }: RideCardProps) {
               {requests.map((req) => (
                 <div key={req.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-sm">
                   <div className="flex flex-wrap items-center gap-1">
-                    <span className="font-medium text-foreground">{req.passenger_name}</span>
+                    <Link to={`/profile/${req.passenger_id}`} className="font-medium text-foreground hover:text-primary transition-colors">
+                      {req.passenger_name}
+                    </Link>
                     <span className="text-muted-foreground text-xs">{req.passenger_phone}</span>
                     <Badge variant={req.status === "approved" ? "default" : req.status === "rejected" ? "destructive" : "secondary"} className="text-xs">
                       {req.status}

@@ -66,10 +66,13 @@ export function RideNotificationListener() {
               toast.success("✅ Your seat request was approved!");
             } else if (updated.status === "rejected") {
               toast.error("❌ Your seat request was rejected.");
+            } else if (updated.status === "cancelled_by_driver") {
+              toast.error("🚫 The driver has cancelled this ride.");
             }
           }
 
           qc.invalidateQueries({ queryKey: ["requests"] });
+          qc.invalidateQueries({ queryKey: ["completionStats"] });
         }
       )
       .subscribe();

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
 export function useProfile(userId?: string) {
@@ -71,13 +72,51 @@ export function useDeleteRide() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
+      // Before deleting, notify approved co-commuters by changing status
+      const { data: approvedReqs } = await supabase
+        .from("ride_requests")
+        .select("id")
+        .eq("ride_id", id)
+        .in("status", ["approved", "pending"]);
+
+      if (approvedReqs && approvedReqs.length > 0) {
+        await supabase
+          .from("ride_requests")
+          .update({ status: "cancelled_by_driver" })
+          .eq("ride_id", id)
+          .in("status", ["approved", "pending"]);
+      }
+
       const { error } = await supabase.from("rides").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["rides"] });
       qc.invalidateQueries({ queryKey: ["requests"] });
+      qc.invalidateQueries({ queryKey: ["completionStats"] });
     },
+  });
+}
+
+export function useCompletionStats(userId?: string) {
+  return useQuery({
+    queryKey: ["completionStats", userId],
+    queryFn: async () => {
+      if (!userId) return { ridesGiven: 0, ridesTaken: 0 };
+
+      const { data, error } = await supabase
+        .from("ride_completion_log")
+        .select("role")
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      const ridesGiven = (data || []).filter((r) => r.role === "driver").length;
+      const ridesTaken = (data || []).filter((r) => r.role === "passenger").length;
+
+      return { ridesGiven, ridesTaken };
+    },
+    enabled: !!userId,
   });
 }
 
