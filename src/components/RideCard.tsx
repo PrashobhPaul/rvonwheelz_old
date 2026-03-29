@@ -66,6 +66,10 @@ export function RideCard({ ride }: RideCardProps) {
   };
 
   const handleRequest = () => {
+    if (hasOngoingRide) {
+      toast.error("You have an ongoing ride. Wait until it ends before requesting a new one.");
+      return;
+    }
     if (availableSeats <= 0) {
       toast.error("No seats available");
       return;
@@ -173,7 +177,7 @@ export function RideCard({ ride }: RideCardProps) {
             </Button>
           )}
 
-          {!isOwner && !isPast && availableSeats > 0 && (!myRequest || myRequest.status === "cancelled" || myRequest.status === "rejected") && (
+          {!isOwner && !isPast && !rideIsOngoing && availableSeats > 0 && !hasOngoingRide && (!myRequest || myRequest.status === "cancelled" || myRequest.status === "rejected") && (
             <Button variant="default" size="sm" onClick={handleRequest} disabled={requestMutation.isPending} className="text-xs">
               <UserPlus className="w-3.5 h-3.5 mr-1" /> {requestMutation.isPending ? "Sending..." : "Request Seat"}
             </Button>
