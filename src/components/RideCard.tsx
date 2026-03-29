@@ -87,7 +87,7 @@ export function RideCard({ ride }: RideCardProps) {
   const handleCancelMyRequest = () => {
     if (!myRequest) return;
     if (!canCancelRequest(rideForTime)) {
-      toast.error("Cannot cancel within 30 minutes of ride start");
+      toast.error("Cannot cancel within 15 minutes of ride start");
       return;
     }
     statusMutation.mutate({ id: myRequest.id, status: "cancelled" }, {
