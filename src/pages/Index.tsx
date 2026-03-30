@@ -28,6 +28,7 @@ export default function Index() {
       .filter((r) => r.direction === filterDirection)
       .filter((r) => !filterDate || r.date === filterDate)
       .filter((r) => filterDestination === "all" || r.destination === filterDestination)
+      .filter((r) => getMinutesUntilRide(r as any) >= 15)
       .sort((a, b) => a.time.localeCompare(b.time));
   }, [rides, filterDirection, filterDate, filterDestination]);
 
