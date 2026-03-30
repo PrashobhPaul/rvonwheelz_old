@@ -85,7 +85,15 @@ export default function MyRides() {
         ) : (
           <div className="space-y-3">
             {myRides.map((ride) => (
-              <RideCard key={ride.id} ride={ride} />
+              <div key={ride.id} className="relative">
+                {isRideOngoing(ride) && (
+                  <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
+                    <Radio className="w-3 h-3" />
+                    Ongoing
+                  </Badge>
+                )}
+                <RideCard ride={ride} />
+              </div>
             ))}
           </div>
         )}
