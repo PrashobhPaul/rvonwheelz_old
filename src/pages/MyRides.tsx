@@ -3,8 +3,8 @@ import { useRides, useRequests, useCompletionStats } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import { RideCard } from "@/components/RideCard";
 import { Badge } from "@/components/ui/badge";
-import { Car, TicketCheck, Loader2, TrendingUp, UserCheck } from "lucide-react";
-import { getDirectionShort } from "@/lib/types";
+import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio } from "lucide-react";
+import { getDirectionShort, isRideOngoing } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function MyRides() {
@@ -85,7 +85,15 @@ export default function MyRides() {
         ) : (
           <div className="space-y-3">
             {myRides.map((ride) => (
-              <RideCard key={ride.id} ride={ride} />
+              <div key={ride.id} className="relative">
+                {isRideOngoing(ride) && (
+                  <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
+                    <Radio className="w-3 h-3" />
+                    Ongoing
+                  </Badge>
+                )}
+                <RideCard ride={ride} />
+              </div>
             ))}
           </div>
         )}
@@ -104,7 +112,13 @@ export default function MyRides() {
         ) : (
           <div className="space-y-2">
             {myRequests.map((req) => (
-              <div key={req.id} className="rounded-lg border bg-card p-3 space-y-1.5">
+              <div key={req.id} className="relative rounded-lg border bg-card p-3 space-y-1.5">
+                {req.ride && isRideOngoing(req.ride) && (
+                  <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
+                    <Radio className="w-3 h-3" />
+                    Ongoing
+                  </Badge>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-foreground">
                     {req.ride ? req.ride.name : "Unknown driver"}
