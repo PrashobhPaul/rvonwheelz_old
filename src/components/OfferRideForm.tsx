@@ -65,6 +65,7 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
       { direction, destination, date, time, seats, vehicle: vehicle.trim() || "Car" },
       {
         onSuccess: () => {
+          recordHabit({ time, direction, destination, action: "offered", date });
           toast.success("Ride offered successfully!");
           onClose();
         },

@@ -136,7 +136,21 @@ export function useCreateRequest() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["requests"] }),
+    onSuccess: (_data, rideId) => {
+      // Record booking habit - find the ride to get its details
+      const rides = qc.getQueryData<any[]>(["rides"]) || [];
+      const ride = rides.find((r: any) => r.id === rideId);
+      if (ride) {
+        recordHabit({
+          time: ride.time,
+          direction: ride.direction,
+          destination: ride.destination,
+          action: "booked",
+          date: ride.date,
+        });
+      }
+      qc.invalidateQueries({ queryKey: ["requests"] });
+    },
   });
 }
 

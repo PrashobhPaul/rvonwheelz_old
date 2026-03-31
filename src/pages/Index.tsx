@@ -62,6 +62,7 @@ export default function Index() {
       <main className="container max-w-3xl mx-auto px-4 py-5 space-y-5">
         {activeTab === "home" ? (
           <>
+            <SmartRideBanner onOfferRide={() => setShowForm(true)} />
             <DirectionToggle
               direction={filterDirection}
               onChange={setFilterDirection}
