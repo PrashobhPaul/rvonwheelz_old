@@ -142,9 +142,12 @@ export function RideCard({ ride }: RideCardProps) {
           )}
         </div>
 
-        {!isPast && minutesUntil < 30 && minutesUntil > 0 && (
-          <div className="flex items-center gap-1.5 text-xs text-accent-foreground">
-            <AlertCircle className="w-3.5 h-3.5" />Ride starts in {Math.round(minutesUntil)} min
+        {!isPast && !rideIsOngoing && minutesUntil > 0 && (
+          <div className={`flex items-center gap-1.5 text-xs ${minutesUntil < 30 ? "text-destructive font-semibold" : "text-muted-foreground"}`}>
+            <Clock className="w-3.5 h-3.5" />
+            {minutesUntil >= 60
+              ? `Departs in ${Math.floor(minutesUntil / 60)}h ${Math.round(minutesUntil % 60)}m`
+              : `Departs in ${Math.round(minutesUntil)} min`}
           </div>
         )}
 
