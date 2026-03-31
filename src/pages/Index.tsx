@@ -4,6 +4,7 @@ import { Ride, DESTINATIONS, DEFAULT_DESTINATION, getLocalToday, getMinutesUntil
 import { DirectionToggle } from "@/components/DirectionToggle";
 import { OfferRideForm } from "@/components/OfferRideForm";
 import { RideCard } from "@/components/RideCard";
+import { SmartRideBanner } from "@/components/SmartRideBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -61,6 +62,7 @@ export default function Index() {
       <main className="container max-w-3xl mx-auto px-4 py-5 space-y-5">
         {activeTab === "home" ? (
           <>
+            <SmartRideBanner onOfferRide={() => setShowForm(true)} />
             <DirectionToggle
               direction={filterDirection}
               onChange={setFilterDirection}
