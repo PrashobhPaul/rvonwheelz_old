@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Ride, canCreateRide, isRideOngoing, getLocalToday, DESTINATIONS, DEFAULT_DESTINATION } from "@/lib/types";
+import { recordHabit } from "@/lib/habitTracker";
 import { DirectionToggle } from "./DirectionToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
