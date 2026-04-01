@@ -373,6 +373,42 @@ export default function Settings() {
         onOpenChange={setShowAddDialog}
         onAdd={refreshPatterns}
       />
+
+      {/* Confirm Clear All */}
+      <AlertDialog open={confirmClearAll} onOpenChange={setConfirmClearAll}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all habits?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete all your saved commute routines. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearHabits} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Clear All
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm Delete Single */}
+      <AlertDialog open={confirmDeleteIndex !== null} onOpenChange={(open) => !open && setConfirmDeleteIndex(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this routine?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This routine will be permanently removed from your habits.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => confirmDeleteIndex !== null && handleDeleteSingle(confirmDeleteIndex)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
