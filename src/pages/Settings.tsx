@@ -169,14 +169,8 @@ export default function Settings() {
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [patterns, setPatterns] = useState<FrequentPattern[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
-
-  const refreshPatterns = useCallback(() => {
-    setPatterns(getFrequentPatterns());
-  }, []);
-
-  useEffect(() => {
-    refreshPatterns();
-  }, [refreshPatterns]);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
+  const [confirmDeleteIndex, setConfirmDeleteIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (profile) {
