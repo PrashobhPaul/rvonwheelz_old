@@ -31,20 +31,49 @@ function getRouteLabel(direction: "to-office" | "to-home", destination: string) 
   return { from: short, to: homeShort };
 }
 
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+
 function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; open: boolean; onOpenChange: (v: boolean) => void }) {
+  const [from, setFrom] = useState("Raheja Vistas Elite");
+  const [to, setTo] = useState("");
   const [time, setTime] = useState("08:00");
   const [direction, setDirection] = useState<"to-office" | "to-home">("to-office");
-  const [destination, setDestination] = useState(DEFAULT_DESTINATION);
   const [action, setAction] = useState<"offered" | "booked">("offered");
+  const [selectedDays, setSelectedDays] = useState<string[]>(["Mon", "Tue", "Wed", "Thu", "Fri"]);
 
-  const handleAdd = () => {
+  const toggleDay = (day: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
+
+  const handleSave = () => {
+    if (!from.trim() || !to.trim()) {
+      toast.error("Please fill in both From and To fields");
+      return;
+    }
+    const destination = direction === "to-office" ? to.trim() : from.trim();
     const today = new Date().toISOString().slice(0, 10);
     // Record twice to create a pattern (≥2 required)
     recordHabit({ time, direction, destination, action, date: today });
     recordHabit({ time, direction, destination, action, date: today });
     toast.success("Routine added! You'll get reminders 30 min before.");
     onOpenChange(false);
+    setFrom("Raheja Vistas Elite");
+    setTo("");
+    setTime("08:00");
+    setSelectedDays(["Mon", "Tue", "Wed", "Thu", "Fri"]);
     onAdd();
+  };
+
+  // Swap from/to when direction changes
+  const handleDirectionChange = (v: string) => {
+    const newDir = v as "to-office" | "to-home";
+    if (newDir !== direction) {
+      setFrom(to);
+      setTo(from);
+    }
+    setDirection(newDir);
   };
 
   return (
@@ -55,27 +84,24 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
         </DialogHeader>
         <div className="space-y-4 pt-2">
           <div className="space-y-1.5">
+            <Label>From</Label>
+            <Input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="e.g. Raheja Vistas Elite" />
+          </div>
+          <div className="space-y-1.5">
+            <Label>To</Label>
+            <Input value={to} onChange={(e) => setTo(e.target.value)} placeholder="e.g. HITEC City" />
+          </div>
+          <div className="space-y-1.5">
             <Label>Time</Label>
             <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label>Direction</Label>
-            <Select value={direction} onValueChange={(v) => setDirection(v as "to-office" | "to-home")}>
+            <Label>Type</Label>
+            <Select value={direction} onValueChange={handleDirectionChange}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="to-office">Going (Home → Destination)</SelectItem>
-                <SelectItem value="to-home">Returning (Destination → Home)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Destination</Label>
-            <Select value={destination} onValueChange={setDestination}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {DESTINATIONS.map((d) => (
-                  <SelectItem key={d} value={d}>{d}</SelectItem>
-                ))}
+                <SelectItem value="to-office">Going</SelectItem>
+                <SelectItem value="to-home">Returning</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -89,7 +115,33 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={handleAdd} className="w-full">Add Routine</Button>
+          <div className="space-y-1.5">
+            <Label>Days <span className="text-muted-foreground text-xs">(optional)</span></Label>
+            <div className="flex flex-wrap gap-1.5">
+              {WEEKDAYS.map((day) => (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => toggleDay(day)}
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                    selectedDays.includes(day)
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted text-muted-foreground border-border hover:bg-accent"
+                  }`}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-2 pt-1">
+            <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="flex-1">
+              Save Routine
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
