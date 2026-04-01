@@ -314,6 +314,13 @@ export default function Settings() {
                       <span className="truncate">{route.from}</span>
                       <ArrowRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
                       <span className="truncate">{route.to}</span>
+                      <button
+                        onClick={() => setConfirmDeleteIndex(i)}
+                        className="ml-auto shrink-0 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        aria-label="Delete routine"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
