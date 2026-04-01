@@ -78,6 +78,15 @@ export function getFrequentPatterns(): FrequentPattern[] {
   return patterns;
 }
 
+/** Delete all entries matching a specific pattern (time+direction+action). */
+export function deletePattern(time: string, direction: string, action: string) {
+  const habits = load();
+  habits.entries = habits.entries.filter(
+    (e) => !(e.time === time && e.direction === direction && e.action === action)
+  );
+  save(habits);
+}
+
 /** Get suggestion if any pattern's time is ~30 min from now (25-35 min window). */
 export function getActiveSuggestion(): FrequentPattern | null {
   const patterns = getFrequentPatterns();
