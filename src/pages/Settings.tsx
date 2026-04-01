@@ -230,6 +230,13 @@ export default function Settings() {
     setConfirmDeleteIndex(null);
     toast.success("Routine deleted");
   };
+
+  if (authLoading && !profile) {
+    return (
+      <Card className="max-w-lg mx-auto">
+        <CardHeader>
+          <CardTitle className="text-lg">Profile Settings</CardTitle>
+          <CardDescription>Loading your saved details...</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center py-10 text-muted-foreground">
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
