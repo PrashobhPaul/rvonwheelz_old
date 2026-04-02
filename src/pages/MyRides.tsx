@@ -6,7 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio, Clock, MapPin, CalendarCheck } from "lucide-react";
 import { getDirectionShort, isRideOngoing } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { getFrequentPatterns } from "@/lib/habitTracker";
+import { getFrequentPatterns, FrequentPattern } from "@/lib/habitTracker";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function MyRides() {
   const { user } = useAuth();
@@ -14,6 +16,7 @@ export default function MyRides() {
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(user?.id);
   const [patterns, setPatterns] = useState(getFrequentPatterns());
+  const navigate = useNavigate();
 
   useEffect(() => {
     setPatterns(getFrequentPatterns());
@@ -100,6 +103,32 @@ export default function MyRides() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Habit Highlight */}
+      {patterns.length > 0 && (() => {
+        const top = [...patterns].sort((a, b) => b.count - a.count)[0];
+        const [h, m] = top.time.split(":").map(Number);
+        const ampm = h >= 12 ? "PM" : "AM";
+        const h12 = h % 12 || 12;
+        const timeStr = `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+        return (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="p-3 flex items-center justify-between gap-3">
+              <div className="space-y-0.5 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">
+                  🚗 You usually travel at {timeStr}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  📍 {top.destination}
+                </p>
+              </div>
+              <Button size="sm" variant="secondary" className="shrink-0 text-xs h-7" onClick={() => navigate("/")}>
+                Find Ride
+              </Button>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Ride Patterns */}
       {patterns.length > 0 && (
