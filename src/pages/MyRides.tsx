@@ -106,7 +106,7 @@ export default function MyRides() {
 
       {/* Habit Highlight */}
       {patterns.length > 0 && (() => {
-        const top = [...patterns].sort((a, b) => b.count - a.count)[0];
+        const top = [...patterns].sort((a, b) => b.frequency - a.frequency)[0];
         const [h, m] = top.time.split(":").map(Number);
         const ampm = h >= 12 ? "PM" : "AM";
         const h12 = h % 12 || 12;
@@ -119,7 +119,7 @@ export default function MyRides() {
                   🚗 You usually travel at {timeStr}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
-                  📍 {top.destination}
+                  📍 {top.from} → {top.to}
                 </p>
               </div>
               <Button size="sm" variant="secondary" className="shrink-0 text-xs h-7" onClick={() => navigate("/")}>

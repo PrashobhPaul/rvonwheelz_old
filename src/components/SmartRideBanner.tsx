@@ -46,7 +46,7 @@ export function SmartRideBanner({ onOfferRide }: SmartRideBannerProps) {
             You usually {actionLabel} a ride at {suggestion.time}
           </p>
           <p className="text-xs text-muted-foreground">
-            {dirLabel} · {suggestion.destination}
+            {dirLabel} · {suggestion.from} → {suggestion.to}
           </p>
           <Button size="sm" className="text-xs h-7 mt-1" onClick={onOfferRide}>
             {suggestion.action === "offered" ? "Offer a Ride Now" : "Find a Ride Now"}

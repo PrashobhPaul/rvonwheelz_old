@@ -334,7 +334,7 @@ export default function Settings() {
                         {p.action === "offered" ? "Offer" : "Book"}
                       </Badge>
                       <span className="text-[10px] text-muted-foreground ml-auto">
-                        {p.count} times
+                        {p.frequency} times
                       </span>
                     </div>
                   </div>
