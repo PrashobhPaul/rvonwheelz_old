@@ -3,9 +3,11 @@ const STORAGE_KEY = "ride_habits";
 export interface HabitEntry {
   time: string;        // HH:MM
   direction: "to-office" | "to-home";
-  destination: string;
+  destination: string; // "to" for going, "from" for returning
+  from?: string;       // origin location
   action: "offered" | "booked";
   date: string;        // YYYY-MM-DD
+  days?: string[];     // e.g. ["Mon","Tue","Wed"]
 }
 
 interface StoredHabits {
@@ -30,7 +32,6 @@ function save(habits: StoredHabits) {
 export function recordHabit(entry: HabitEntry) {
   const habits = load();
   habits.entries.push(entry);
-  // Keep only the latest 60
   if (habits.entries.length > 60) {
     habits.entries = habits.entries.slice(-60);
   }
@@ -40,24 +41,48 @@ export function recordHabit(entry: HabitEntry) {
 export interface FrequentPattern {
   time: string;
   direction: "to-office" | "to-home";
-  destination: string;
+  from: string;
+  to: string;
   action: "offered" | "booked";
-  count: number;
+  frequency: number;
+  days: string[];
 }
 
 /** Detect patterns where the same time appears ≥ 2 times. */
 export function getFrequentPatterns(): FrequentPattern[] {
   const habits = load();
-  // Group by time+direction+action
-  const groups = new Map<string, { dest: string; count: number; direction: "to-office" | "to-home"; action: "offered" | "booked" }>();
+  const groups = new Map<string, {
+    from: string;
+    to: string;
+    count: number;
+    direction: "to-office" | "to-home";
+    action: "offered" | "booked";
+    days: Set<string>;
+  }>();
 
   for (const e of habits.entries) {
     const key = `${e.time}|${e.direction}|${e.action}`;
     const existing = groups.get(key);
+
+    // Derive from/to based on direction
+    const entryFrom = e.from || (e.direction === "to-office" ? "Home" : e.destination);
+    const entryTo = e.direction === "to-office" ? e.destination : (e.from || "Home");
+
+    // Collect day-of-week from date
+    const entryDays = e.days || [];
+
     if (existing) {
       existing.count++;
+      entryDays.forEach((d) => existing.days.add(d));
     } else {
-      groups.set(key, { dest: e.destination, count: 1, direction: e.direction, action: e.action });
+      groups.set(key, {
+        from: entryFrom,
+        to: entryTo,
+        count: 1,
+        direction: e.direction,
+        action: e.action,
+        days: new Set(entryDays),
+      });
     }
   }
 
@@ -68,9 +93,11 @@ export function getFrequentPatterns(): FrequentPattern[] {
       patterns.push({
         time,
         direction: val.direction,
-        destination: val.dest,
+        from: val.from,
+        to: val.to,
         action: val.action,
-        count: val.count,
+        frequency: val.count,
+        days: Array.from(val.days),
       });
     }
   }
@@ -99,7 +126,6 @@ export function getActiveSuggestion(): FrequentPattern | null {
     const [h, m] = p.time.split(":").map(Number);
     const patternMinutes = h * 60 + m;
     const diff = patternMinutes - nowMinutes;
-    // Show banner when 25-35 min before the pattern time
     if (diff >= 25 && diff <= 35) {
       return p;
     }

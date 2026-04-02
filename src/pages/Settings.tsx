@@ -63,10 +63,11 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
       return;
     }
     const destination = direction === "to-office" ? to.trim() : from.trim();
+    const origin = direction === "to-office" ? from.trim() : to.trim();
     const today = new Date().toISOString().slice(0, 10);
     // Record twice to create a pattern (≥2 required)
-    recordHabit({ time, direction, destination, action, date: today });
-    recordHabit({ time, direction, destination, action, date: today });
+    recordHabit({ time, direction, destination, from: origin, action, date: today, days: selectedDays });
+    recordHabit({ time, direction, destination, from: origin, action, date: today, days: selectedDays });
     toast.success("Routine added! You'll get reminders 30 min before.");
     onOpenChange(false);
     setFrom("Raheja Vistas Elite");
@@ -304,7 +305,7 @@ export default function Settings() {
           ) : (
             <div className="space-y-2">
               {patterns.map((p, i) => {
-                const route = getRouteLabel(p.direction, p.destination);
+                const route = { from: p.from, to: p.to };
                 return (
                   <div
                     key={`${p.time}-${p.direction}-${p.action}-${i}`}
@@ -334,7 +335,7 @@ export default function Settings() {
                         {p.action === "offered" ? "Offer" : "Book"}
                       </Badge>
                       <span className="text-[10px] text-muted-foreground ml-auto">
-                        {p.count} times
+                        {p.frequency} times
                       </span>
                     </div>
                   </div>
