@@ -304,7 +304,7 @@ export default function Settings() {
           ) : (
             <div className="space-y-2">
               {patterns.map((p, i) => {
-                const route = getRouteLabel(p.direction, p.destination);
+                const route = { from: p.from, to: p.to };
                 return (
                   <div
                     key={`${p.time}-${p.direction}-${p.action}-${i}`}
