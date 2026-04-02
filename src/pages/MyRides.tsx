@@ -13,6 +13,11 @@ export default function MyRides() {
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(user?.id);
+  const [patterns, setPatterns] = useState(getFrequentPatterns());
+
+  useEffect(() => {
+    setPatterns(getFrequentPatterns());
+  }, []);
 
   const myRides = useMemo(
     () => rides.filter((r) => r.user_id === user?.id).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)),
@@ -33,6 +38,29 @@ export default function MyRides() {
   const activePastTaken = myRequests.filter((r) => r.status === "approved" && r.ride && new Date(`${r.ride.date}T${r.ride.time}`) < now).length;
   const ridesGivenCount = (completionStats?.ridesGiven || 0) + activePastGiven;
   const ridesTakenCount = (completionStats?.ridesTaken || 0) + activePastTaken;
+
+  // Derive pattern stats
+  const mostFrequentTime = useMemo(() => {
+    if (patterns.length === 0) return null;
+    const sorted = [...patterns].sort((a, b) => b.count - a.count);
+    const [h, m] = sorted[0].time.split(":").map(Number);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 || 12;
+    return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+  }, [patterns]);
+
+  const mostUsedRoute = useMemo(() => {
+    if (patterns.length === 0) return null;
+    const sorted = [...patterns].sort((a, b) => b.count - a.count);
+    return sorted[0].destination;
+  }, [patterns]);
+
+  const habitConsistency = useMemo(() => {
+    if (patterns.length === 0) return null;
+    const totalCount = patterns.reduce((sum, p) => sum + p.count, 0);
+    const daysPerWeek = Math.min(7, Math.round(totalCount / Math.max(1, patterns.length)));
+    return `${daysPerWeek} days/week`;
+  }, [patterns]);
 
   const isLoading = ridesLoading || reqLoading;
 
