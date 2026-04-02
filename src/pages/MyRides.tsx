@@ -17,6 +17,8 @@ export default function MyRides() {
   const { data: completionStats } = useCompletionStats(user?.id);
   const [patterns, setPatterns] = useState(getFrequentPatterns());
   const navigate = useNavigate();
+
+  useEffect(() => {
     setPatterns(getFrequentPatterns());
   }, []);
 
