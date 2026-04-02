@@ -6,7 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio, Clock, MapPin, CalendarCheck } from "lucide-react";
 import { getDirectionShort, isRideOngoing } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { getFrequentPatterns } from "@/lib/habitTracker";
+import { getFrequentPatterns, FrequentPattern } from "@/lib/habitTracker";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function MyRides() {
   const { user } = useAuth();
