@@ -1,17 +1,23 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRides, useRequests, useCompletionStats } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import { RideCard } from "@/components/RideCard";
 import { Badge } from "@/components/ui/badge";
-import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio } from "lucide-react";
+import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio, Clock, MapPin, CalendarCheck } from "lucide-react";
 import { getDirectionShort, isRideOngoing } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { getFrequentPatterns } from "@/lib/habitTracker";
 
 export default function MyRides() {
   const { user } = useAuth();
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(user?.id);
+  const [patterns, setPatterns] = useState(getFrequentPatterns());
+
+  useEffect(() => {
+    setPatterns(getFrequentPatterns());
+  }, []);
 
   const myRides = useMemo(
     () => rides.filter((r) => r.user_id === user?.id).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)),
@@ -32,6 +38,29 @@ export default function MyRides() {
   const activePastTaken = myRequests.filter((r) => r.status === "approved" && r.ride && new Date(`${r.ride.date}T${r.ride.time}`) < now).length;
   const ridesGivenCount = (completionStats?.ridesGiven || 0) + activePastGiven;
   const ridesTakenCount = (completionStats?.ridesTaken || 0) + activePastTaken;
+
+  // Derive pattern stats
+  const mostFrequentTime = useMemo(() => {
+    if (patterns.length === 0) return null;
+    const sorted = [...patterns].sort((a, b) => b.count - a.count);
+    const [h, m] = sorted[0].time.split(":").map(Number);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 || 12;
+    return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
+  }, [patterns]);
+
+  const mostUsedRoute = useMemo(() => {
+    if (patterns.length === 0) return null;
+    const sorted = [...patterns].sort((a, b) => b.count - a.count);
+    return sorted[0].destination;
+  }, [patterns]);
+
+  const habitConsistency = useMemo(() => {
+    if (patterns.length === 0) return null;
+    const totalCount = patterns.reduce((sum, p) => sum + p.count, 0);
+    const daysPerWeek = Math.min(7, Math.round(totalCount / Math.max(1, patterns.length)));
+    return `${daysPerWeek} days/week`;
+  }, [patterns]);
 
   const isLoading = ridesLoading || reqLoading;
 
@@ -71,6 +100,42 @@ export default function MyRides() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Ride Patterns */}
+      {patterns.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-foreground">Your Ride Patterns</h2>
+          <div className="grid grid-cols-3 gap-2">
+            <Card>
+              <CardContent className="p-3 flex flex-col items-center text-center gap-1.5">
+                <div className="rounded-full bg-primary/10 p-2">
+                  <Clock className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-base font-bold text-foreground">{mostFrequentTime}</p>
+                <p className="text-[10px] text-muted-foreground leading-tight">Most Frequent Time</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-3 flex flex-col items-center text-center gap-1.5">
+                <div className="rounded-full bg-primary/10 p-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-xs font-bold text-foreground leading-tight">{mostUsedRoute}</p>
+                <p className="text-[10px] text-muted-foreground leading-tight">Most Used Route</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-3 flex flex-col items-center text-center gap-1.5">
+                <div className="rounded-full bg-primary/10 p-2">
+                  <CalendarCheck className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-base font-bold text-foreground">{habitConsistency}</p>
+                <p className="text-[10px] text-muted-foreground leading-tight">Habit Consistency</p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* My Offered Rides */}
       <section className="space-y-3">
