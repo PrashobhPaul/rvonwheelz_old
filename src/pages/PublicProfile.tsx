@@ -22,7 +22,13 @@ export default function PublicProfile() {
   );
 
   const now = new Date();
-  const activePastGiven = userRides.filter((r) => new Date(`${r.date}T${r.time}`) < now).length;
+  const activePastGiven = userRides.filter((r) => {
+    const isPast = new Date(`${r.date}T${r.time}`) < now;
+    const hasApprovedPassenger = allRequests.some(
+      (req) => req.ride_id === r.id && req.status === "approved"
+    );
+    return isPast && hasApprovedPassenger;
+  }).length;
   const ridesGivenCount = (completionStats?.ridesGiven || 0) + activePastGiven;
 
   const ridesTakenCount = useMemo(() => {
