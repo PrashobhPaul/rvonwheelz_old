@@ -127,6 +127,19 @@ export function useCreateRequest() {
   return useMutation({
     mutationFn: async (rideId: string) => {
       if (!user || !profile) throw new Error("Not authenticated");
+
+      // Check for existing active request
+      const { data: existing } = await supabase
+        .from("ride_requests")
+        .select("id, status")
+        .eq("ride_id", rideId)
+        .eq("passenger_id", user.id)
+        .not("status", "in", '("rejected","cancelled")');
+
+      if (existing && existing.length > 0) {
+        throw new Error("You have already requested this ride");
+      }
+
       const { data, error } = await supabase.from("ride_requests").insert({
         ride_id: rideId,
         passenger_id: user.id,
