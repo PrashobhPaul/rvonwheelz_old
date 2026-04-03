@@ -85,6 +85,11 @@ export function RideCard({ ride }: RideCardProps) {
   };
 
   const handleApprove = (reqId: string, name: string) => {
+    const rideDateTime = new Date(`${ride.date}T${ride.time}`);
+    if (new Date() > rideDateTime) {
+      toast.error("Cannot approve after ride has started");
+      return;
+    }
     statusMutation.mutate({ id: reqId, status: "approved" }, {
       onSuccess: () => toast.success(`${name} approved`),
     });
