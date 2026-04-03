@@ -66,6 +66,10 @@ export function RideCard({ ride }: RideCardProps) {
   };
 
   const handleRequest = () => {
+    if (new Date() > new Date(`${ride.date}T${ride.time}`)) {
+      toast.error("This ride has already started");
+      return;
+    }
     if (hasOngoingRide) {
       toast.error("You have an ongoing ride. Wait until it ends before requesting a new one.");
       return;
