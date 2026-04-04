@@ -279,6 +279,17 @@ export default function Settings() {
               <Input id="s-phone" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit number" required />
             </div>
             <div className="space-y-1.5">
+              <Label>Office Location</Label>
+              <Select value={officeLocation} onValueChange={setOfficeLocation}>
+                <SelectTrigger><SelectValue placeholder="Select your office location" /></SelectTrigger>
+                <SelectContent>
+                  {DESTINATIONS.map((dest) => (
+                    <SelectItem key={dest} value={dest}>{dest}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
               <Label htmlFor="s-vehicle">Vehicle Name</Label>
               <Input id="s-vehicle" value={vehicleName} onChange={(e) => setVehicleName(e.target.value)} placeholder="e.g. Hyundai i20, Honda Activa" maxLength={50} />
             </div>
