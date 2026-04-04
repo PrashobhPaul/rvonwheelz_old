@@ -70,17 +70,20 @@ export default function Index() {
             />
 
             <div className="space-y-2">
-              <Select value={filterDestination} onValueChange={setFilterDestination}>
-                <SelectTrigger className="text-sm">
-                  <SelectValue placeholder="All destinations" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  <SelectItem value="all">All Destinations</SelectItem>
-                  {DESTINATIONS.map((d) => (
-                    <SelectItem key={d} value={d} className="text-sm">{d}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted-foreground">Filter by Destination</label>
+                <Select value={filterDestination} onValueChange={setFilterDestination}>
+                  <SelectTrigger className="text-sm">
+                    <SelectValue placeholder="All destinations" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="all">All Destinations</SelectItem>
+                    {DESTINATIONS.map((d) => (
+                      <SelectItem key={d} value={d} className="text-sm">{d}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               <div className="flex gap-2">
                 <div className="relative flex-1">
