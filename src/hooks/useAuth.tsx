@@ -9,6 +9,7 @@ interface Profile {
   phone: string;
   vehicle_name: string;
   registration_number: string;
+  office_location: string;
 }
 
 interface AuthContextType {
