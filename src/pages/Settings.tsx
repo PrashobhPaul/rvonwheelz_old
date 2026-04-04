@@ -44,8 +44,7 @@ function getRouteLabel(direction: "to-office" | "to-home", destination: string) 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
 function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; open: boolean; onOpenChange: (v: boolean) => void }) {
-  const [from, setFrom] = useState("Raheja Vistas Elite");
-  const [to, setTo] = useState("");
+  const [destination, setDestination] = useState(DEFAULT_DESTINATION);
   const [time, setTime] = useState("08:00");
   const [direction, setDirection] = useState<"to-office" | "to-home">("to-office");
   const [action, setAction] = useState<"offered" | "booked">("offered");
@@ -58,33 +57,25 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
   };
 
   const handleSave = () => {
-    if (!from.trim() || !to.trim()) {
-      toast.error("Please fill in both From and To fields");
+    if (!destination) {
+      toast.error("Please select a destination");
       return;
     }
-    const destination = direction === "to-office" ? to.trim() : from.trim();
-    const origin = direction === "to-office" ? from.trim() : to.trim();
+    const from = direction === "to-office" ? HOME_LOCATION : destination;
+    const to = direction === "to-office" ? destination : HOME_LOCATION;
     const today = new Date().toISOString().slice(0, 10);
-    // Record twice to create a pattern (≥2 required)
-    recordHabit({ time, direction, destination, from: origin, action, date: today, days: selectedDays });
-    recordHabit({ time, direction, destination, from: origin, action, date: today, days: selectedDays });
+    recordHabit({ time, direction, destination, from, action, date: today, days: selectedDays });
+    recordHabit({ time, direction, destination, from, action, date: today, days: selectedDays });
     toast.success("Routine added! You'll get reminders 30 min before.");
     onOpenChange(false);
-    setFrom("Raheja Vistas Elite");
-    setTo("");
+    setDestination(DEFAULT_DESTINATION);
     setTime("08:00");
     setSelectedDays(["Mon", "Tue", "Wed", "Thu", "Fri"]);
     onAdd();
   };
 
-  // Swap from/to when direction changes
   const handleDirectionChange = (v: string) => {
-    const newDir = v as "to-office" | "to-home";
-    if (newDir !== direction) {
-      setFrom(to);
-      setTo(from);
-    }
-    setDirection(newDir);
+    setDirection(v as "to-office" | "to-home");
   };
 
   return (
@@ -95,12 +86,15 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
         </DialogHeader>
         <div className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <Label>From</Label>
-            <Input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="e.g. Raheja Vistas Elite" />
-          </div>
-          <div className="space-y-1.5">
-            <Label>To</Label>
-            <Input value={to} onChange={(e) => setTo(e.target.value)} placeholder="e.g. HITEC City" />
+            <Label>Destination</Label>
+            <Select value={destination} onValueChange={setDestination}>
+              <SelectTrigger><SelectValue placeholder="Select destination" /></SelectTrigger>
+              <SelectContent>
+                {DESTINATIONS.map((dest) => (
+                  <SelectItem key={dest} value={dest}>{dest}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label>Time</Label>
