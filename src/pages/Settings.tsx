@@ -57,20 +57,18 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
   };
 
   const handleSave = () => {
-    if (!from.trim() || !to.trim()) {
-      toast.error("Please fill in both From and To fields");
+    if (!destination) {
+      toast.error("Please select a destination");
       return;
     }
-    const destination = direction === "to-office" ? to.trim() : from.trim();
-    const origin = direction === "to-office" ? from.trim() : to.trim();
+    const from = direction === "to-office" ? HOME_LOCATION : destination;
+    const to = direction === "to-office" ? destination : HOME_LOCATION;
     const today = new Date().toISOString().slice(0, 10);
-    // Record twice to create a pattern (≥2 required)
-    recordHabit({ time, direction, destination, from: origin, action, date: today, days: selectedDays });
-    recordHabit({ time, direction, destination, from: origin, action, date: today, days: selectedDays });
+    recordHabit({ time, direction, destination, from, action, date: today, days: selectedDays });
+    recordHabit({ time, direction, destination, from, action, date: today, days: selectedDays });
     toast.success("Routine added! You'll get reminders 30 min before.");
     onOpenChange(false);
-    setFrom("Raheja Vistas Elite");
-    setTo("");
+    setDestination(DEFAULT_DESTINATION);
     setTime("08:00");
     setSelectedDays(["Mon", "Tue", "Wed", "Thu", "Fri"]);
     onAdd();
