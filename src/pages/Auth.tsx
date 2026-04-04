@@ -55,6 +55,7 @@ export default function Auth() {
           phone: phone.trim(),
           vehicle_name: "",
           registration_number: "",
+          office_location: "Nanakramguda – Sattva Knowledge City Main Gate",
         });
         toast.success("Registration successful! You're now logged in.");
       } else {

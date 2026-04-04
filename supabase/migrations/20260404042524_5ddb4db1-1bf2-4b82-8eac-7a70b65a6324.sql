@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN office_location text NOT NULL DEFAULT 'Nanakramguda – Sattva Knowledge City Main Gate';

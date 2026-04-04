@@ -9,6 +9,7 @@ interface Profile {
   phone: string;
   vehicle_name: string;
   registration_number: string;
+  office_location: string;
 }
 
 interface AuthContextType {
@@ -31,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("name, block, flat_number, phone, vehicle_name, registration_number")
+      .select("name, block, flat_number, phone, vehicle_name, registration_number, office_location")
       .eq("user_id", userId)
       .maybeSingle();
 

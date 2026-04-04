@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Save, Plus, Trash2, Clock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { getFrequentPatterns, FrequentPattern, recordHabit, deletePattern } from "@/lib/habitTracker";
-import { HOME_LOCATION } from "@/lib/types";
+import { HOME_LOCATION, DESTINATIONS, DEFAULT_DESTINATION } from "@/lib/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog,
@@ -168,6 +168,7 @@ export default function Settings() {
   const [phone, setPhone] = useState("");
   const [vehicleName, setVehicleName] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
+  const [officeLocation, setOfficeLocation] = useState(DEFAULT_DESTINATION);
   const [patterns, setPatterns] = useState<FrequentPattern[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
@@ -181,6 +182,7 @@ export default function Settings() {
       setPhone(profile.phone);
       setVehicleName(profile.vehicle_name || "");
       setRegistrationNumber(profile.registration_number || "");
+      setOfficeLocation(profile.office_location || DEFAULT_DESTINATION);
     }
   }, [profile]);
 
@@ -200,6 +202,7 @@ export default function Settings() {
         phone: phone.trim(),
         vehicle_name: vehicleName.trim(),
         registration_number: registrationNumber.trim(),
+        office_location: officeLocation,
       });
       toast.success("Profile updated!");
     } catch (err: any) {
@@ -274,6 +277,17 @@ export default function Settings() {
             <div className="space-y-1.5">
               <Label htmlFor="s-phone">Mobile Number</Label>
               <Input id="s-phone" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit number" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Office Location</Label>
+              <Select value={officeLocation} onValueChange={setOfficeLocation}>
+                <SelectTrigger><SelectValue placeholder="Select your office location" /></SelectTrigger>
+                <SelectContent>
+                  {DESTINATIONS.map((dest) => (
+                    <SelectItem key={dest} value={dest}>{dest}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="s-vehicle">Vehicle Name</Label>

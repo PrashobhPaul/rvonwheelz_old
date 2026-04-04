@@ -21,6 +21,7 @@ export type Database = {
           flat_number: string
           id: string
           name: string
+          office_location: string
           phone: string
           registration_number: string
           user_id: string
@@ -32,6 +33,7 @@ export type Database = {
           flat_number: string
           id?: string
           name: string
+          office_location?: string
           phone: string
           registration_number?: string
           user_id: string
@@ -43,6 +45,7 @@ export type Database = {
           flat_number?: string
           id?: string
           name?: string
+          office_location?: string
           phone?: string
           registration_number?: string
           user_id?: string
