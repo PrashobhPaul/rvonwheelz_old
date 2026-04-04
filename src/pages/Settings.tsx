@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Save, Plus, Trash2, Clock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { getFrequentPatterns, FrequentPattern, recordHabit, deletePattern } from "@/lib/habitTracker";
-import { HOME_LOCATION } from "@/lib/types";
+import { HOME_LOCATION, DESTINATIONS, DEFAULT_DESTINATION } from "@/lib/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog,
