@@ -8,15 +8,17 @@ import { getDirectionShort, isRideOngoing } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { getFrequentPatterns, FrequentPattern } from "@/lib/habitTracker";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
-export default function MyRides() {
+interface MyRidesProps {
+  onSwitchToHome?: () => void;
+}
+
+export default function MyRides({ onSwitchToHome }: MyRidesProps) {
   const { user } = useAuth();
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(user?.id);
   const [patterns, setPatterns] = useState(getFrequentPatterns());
-  const navigate = useNavigate();
 
   useEffect(() => {
     setPatterns(getFrequentPatterns());
@@ -128,7 +130,7 @@ export default function MyRides() {
                   📍 {top.from} → {top.to}
                 </p>
               </div>
-              <Button size="sm" variant="secondary" className="shrink-0 text-xs h-7" onClick={() => navigate("/")}>
+              <Button size="sm" variant="secondary" className="shrink-0 text-xs h-7" onClick={() => onSwitchToHome?.()}>
                 Find Ride
               </Button>
             </CardContent>
