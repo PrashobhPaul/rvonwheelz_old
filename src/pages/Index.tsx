@@ -84,7 +84,7 @@ export default function Index() {
             <DirectionToggle
               direction={filterDirection}
               onChange={setFilterDirection}
-              destination={filterDestination !== "all" ? filterDestination : undefined}
+              destination={effectiveDestination}
             />
 
             <div className="space-y-2">
