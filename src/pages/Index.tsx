@@ -43,10 +43,19 @@ export default function Index() {
     : (profile?.office_location || DEFAULT_DESTINATION);
 
   const filtered = useMemo(() => {
+    // Extract area prefix (e.g. "HITEC City") from the selected destination
+    const filterArea = filterDestination !== "all"
+      ? filterDestination.split("–")[0].trim()
+      : null;
+
     return rides
       .filter((r) => r.direction === filterDirection)
       .filter((r) => !filterDate || r.date === filterDate)
-      .filter((r) => filterDestination === "all" || r.destination === filterDestination)
+      .filter((r) => {
+        if (!filterArea) return true;
+        const rideArea = (r.destination || "").split("–")[0].trim();
+        return rideArea === filterArea;
+      })
       .filter((r) => getMinutesUntilRide(r as any) >= 15)
       .sort((a, b) => a.time.localeCompare(b.time));
   }, [rides, filterDirection, filterDate, filterDestination]);
