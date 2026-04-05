@@ -130,7 +130,7 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
                   📍 {top.from} → {top.to}
                 </p>
               </div>
-              <Button size="sm" variant="secondary" className="shrink-0 text-xs h-7" onClick={() => navigate("/")}>
+              <Button size="sm" variant="secondary" className="shrink-0 text-xs h-7" onClick={() => onSwitchToHome?.()}>
                 Find Ride
               </Button>
             </CardContent>
