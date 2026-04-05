@@ -65,8 +65,8 @@ export function getFrequentPatterns(): FrequentPattern[] {
     const existing = groups.get(key);
 
     // Derive from/to based on direction
-    const entryFrom = e.from || (e.direction === "to-office" ? "Home" : e.destination);
-    const entryTo = e.direction === "to-office" ? e.destination : (e.from || "Home");
+    const entryFrom = e.direction === "to-office" ? (e.from || "Raheja Vistas Elite, Nacharam") : e.destination;
+    const entryTo = e.direction === "to-office" ? e.destination : "Raheja Vistas Elite, Nacharam";
 
     // Collect day-of-week from date
     const entryDays = e.days || [];
