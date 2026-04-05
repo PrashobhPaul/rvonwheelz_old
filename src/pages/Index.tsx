@@ -156,7 +156,7 @@ export default function Index() {
             </footer>
           </>
         ) : activeTab === "my-rides" ? (
-          <MyRides />
+          <MyRides onSwitchToHome={() => setActiveTab("home")} />
         ) : (
           <SettingsPage />
         )}
