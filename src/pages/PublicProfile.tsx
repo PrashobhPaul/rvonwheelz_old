@@ -14,11 +14,15 @@ import { toast } from "sonner";
 export default function PublicProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(userId);
-
+  const { data: favorites = [] } = useFavorites();
+  const toggleFavMutation = useToggleFavorite();
+  const isFavorite = userId ? favorites.includes(userId) : false;
+  const isOwnProfile = user?.id === userId;
   const userRides = useMemo(
     () => rides.filter((r) => r.user_id === userId).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)),
     [rides, userId]
