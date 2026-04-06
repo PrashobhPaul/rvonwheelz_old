@@ -20,6 +20,7 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(user?.id);
   const [patterns, setPatterns] = useState(getFrequentPatterns());
+  const [chatRide, setChatRide] = useState<any>(null);
 
   useEffect(() => {
     setPatterns(getFrequentPatterns());
