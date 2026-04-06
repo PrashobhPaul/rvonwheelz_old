@@ -1,12 +1,15 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRides, useRequests, useProfile, useCompletionStats } from "@/hooks/useRides";
+import { useFavorites, useToggleFavorite } from "@/hooks/useFavorites";
+import { useAuth } from "@/hooks/useAuth";
 import { getDirectionShort, HOME_LOCATION } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Car, TrendingUp, UserCheck, Clock, ArrowRight, Bike } from "lucide-react";
+import { ArrowLeft, Car, TrendingUp, UserCheck, Clock, ArrowRight, Bike, Star } from "lucide-react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function PublicProfile() {
   const { userId } = useParams<{ userId: string }>();
