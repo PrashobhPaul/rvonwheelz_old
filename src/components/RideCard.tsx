@@ -169,7 +169,7 @@ export function RideCard({ ride }: RideCardProps) {
               <Link
                 key={req.id}
                 to={`/profile/${req.passenger_id}`}
-                className="inline-flex items-center bg-muted px-1.5 py-0.5 rounded hover:bg-primary/10 transition-colors"
+                className="inline-flex items-center bg-primary/10 text-primary px-1.5 py-0.5 rounded underline underline-offset-2 hover:bg-primary/20 transition-colors text-xs font-medium"
               >
                 {req.passenger_name}
               </Link>
