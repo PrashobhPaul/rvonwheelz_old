@@ -188,17 +188,32 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
           <p className="text-sm text-muted-foreground py-4 text-center">You haven't offered any rides yet.</p>
         ) : (
           <div className="space-y-3">
-            {myRides.map((ride) => (
-              <div key={ride.id} className="relative">
-                {isRideOngoing(ride) && (
-                  <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
-                    <Radio className="w-3 h-3" />
-                    Ongoing
-                  </Badge>
-                )}
-                <RideCard ride={ride} />
-              </div>
-            ))}
+            {myRides.map((ride) => {
+              const hasApproved = allRequests.some((r) => r.ride_id === ride.id && r.status === "approved");
+              const rideEnd = new Date(new Date(`${ride.date}T${ride.time}`).getTime() + 60 * 60000);
+              const chatAvailable = hasApproved && new Date() < rideEnd;
+              return (
+                <div key={ride.id} className="relative">
+                  {isRideOngoing(ride) && (
+                    <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
+                      <Radio className="w-3 h-3" />
+                      Ongoing
+                    </Badge>
+                  )}
+                  <RideCard ride={ride} />
+                  {chatAvailable && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-1 w-full text-xs gap-1.5"
+                      onClick={() => setChatRide(ride)}
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" /> Open Ride Chat
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
