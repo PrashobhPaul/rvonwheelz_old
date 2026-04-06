@@ -287,6 +287,11 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
           </div>
         )}
       </section>
+
+      {/* Chat Overlay */}
+      {chatRide && (
+        <RideChat ride={chatRide} onClose={() => setChatRide(null)} />
+      )}
     </div>
   );
 }
