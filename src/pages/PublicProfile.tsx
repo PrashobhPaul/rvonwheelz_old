@@ -1,21 +1,28 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRides, useRequests, useProfile, useCompletionStats } from "@/hooks/useRides";
+import { useFavorites, useToggleFavorite } from "@/hooks/useFavorites";
+import { useAuth } from "@/hooks/useAuth";
 import { getDirectionShort, HOME_LOCATION } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Car, TrendingUp, UserCheck, Clock, ArrowRight, Bike } from "lucide-react";
+import { ArrowLeft, Car, TrendingUp, UserCheck, Clock, ArrowRight, Bike, Star } from "lucide-react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function PublicProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(userId);
-
+  const { data: favorites = [] } = useFavorites();
+  const toggleFavMutation = useToggleFavorite();
+  const isFavorite = userId ? favorites.includes(userId) : false;
+  const isOwnProfile = user?.id === userId;
   const userRides = useMemo(
     () => rides.filter((r) => r.user_id === userId).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)),
     [rides, userId]
@@ -83,6 +90,19 @@ export default function PublicProfile() {
           <p className="text-sm text-muted-foreground">
             Block {profile.block}, Flat {profile.flat_number}
           </p>
+          {!isOwnProfile && user && (
+            <Button
+              variant={isFavorite ? "default" : "outline"}
+              size="sm"
+              className="mt-2"
+              onClick={() => userId && toggleFavMutation.mutate(userId, {
+                onSuccess: (res) => toast.success(res.action === "added" ? "Added to favorites ⭐" : "Removed from favorites"),
+              })}
+            >
+              <Star className={`w-4 h-4 mr-1 ${isFavorite ? "fill-yellow-400 text-yellow-400" : ""}`} />
+              {isFavorite ? "⭐ Preferred" : "Add to Favorites"}
+            </Button>
+          )}
         </div>
 
         {/* Stats */}

@@ -8,6 +8,8 @@ import { Clock, Users, Car, Phone, Trash2, ArrowRight, ArrowLeft, UserPlus, Chec
 import { toast } from "sonner";
 import { useRequests, useDeleteRide, useCreateRequest, useUpdateRequestStatus, useProfile, useRides } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
+import { useFavorites, useToggleFavorite } from "@/hooks/useFavorites";
+import { Star } from "lucide-react";
 
 interface RideCardProps {
   ride: {
@@ -33,6 +35,8 @@ export function RideCard({ ride }: RideCardProps) {
   const { data: allRides = [] } = useRides();
   const { data: allRequests = [] } = useRequests();
   const { data: driverProfile } = useProfile(ride.user_id);
+  const { data: favorites = [] } = useFavorites();
+  const toggleFavMutation = useToggleFavorite();
   const deleteMutation = useDeleteRide();
   const requestMutation = useCreateRequest();
   const statusMutation = useUpdateRequestStatus();
@@ -45,6 +49,7 @@ export function RideCard({ ride }: RideCardProps) {
   const minutesUntil = getMinutesUntilRide({ ...rideForTime, id: ride.id, name: ride.name, phone: ride.phone, seats: ride.seats, vehicle: ride.vehicle, createdAt: ride.created_at });
   const isPast = minutesUntil < 0;
   const isOwner = user?.id === ride.user_id;
+  const isFavoriteDriver = !isOwner && favorites.includes(ride.user_id);
   const pendingRequests = requests.filter((r) => r.status === "pending");
   const myRequest = requests.find((r) => r.passenger_id === user?.id);
   const rideIsOngoing = isRideOngoing(ride);
@@ -121,11 +126,29 @@ export function RideCard({ ride }: RideCardProps) {
   };
 
   return (
-    <Card className={`ride-card-shadow hover:ride-card-shadow-hover transition-shadow animate-slide-up ${isPast ? "opacity-60" : ""}`}>
+    <Card className={`ride-card-shadow hover:ride-card-shadow-hover transition-shadow animate-slide-up ${isPast ? "opacity-60" : ""} ${isFavoriteDriver ? "ring-2 ring-yellow-400/50 bg-yellow-50/30 dark:bg-yellow-950/10" : ""}`}>
       <CardContent className="p-4 space-y-3">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <Link to={`/profile/${ride.user_id}`} className="font-semibold text-primary underline underline-offset-2 hover:text-primary/80 transition-colors">{ride.name}</Link>
+          <div className="flex items-center gap-1.5">
+            <Link to={`/profile/${ride.user_id}`} className="font-semibold text-primary underline underline-offset-2 hover:text-primary/80 transition-colors">{ride.name}</Link>
+            {isFavoriteDriver && (
+              <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-300 dark:border-yellow-700">
+                ⭐ Preferred
+              </Badge>
+            )}
+            {!isOwner && user && ride.user_id !== user.id && (
+              <button
+                onClick={() => toggleFavMutation.mutate(ride.user_id, {
+                  onSuccess: (res) => toast.success(res.action === "added" ? "Added to favorites" : "Removed from favorites"),
+                })}
+                className="p-0.5 hover:scale-110 transition-transform"
+                aria-label={isFavoriteDriver ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Star className={`w-4 h-4 ${isFavoriteDriver ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
+              </button>
+            )}
+          </div>
           <div className="flex items-center gap-1.5">
             <Badge variant="outline" className="text-xs">{availableSeats}/{ride.seats} seats</Badge>
             <Badge variant="secondary" className="text-xs">
