@@ -38,7 +38,6 @@ export function RideCard({ ride }: RideCardProps) {
   const { data: favorites = [] } = useFavorites();
   const toggleFavMutation = useToggleFavorite();
   const deleteMutation = useDeleteRide();
-  const isFavoriteDriver = !isOwner && favorites.includes(ride.user_id);
   const requestMutation = useCreateRequest();
   const statusMutation = useUpdateRequestStatus();
 
@@ -50,6 +49,7 @@ export function RideCard({ ride }: RideCardProps) {
   const minutesUntil = getMinutesUntilRide({ ...rideForTime, id: ride.id, name: ride.name, phone: ride.phone, seats: ride.seats, vehicle: ride.vehicle, createdAt: ride.created_at });
   const isPast = minutesUntil < 0;
   const isOwner = user?.id === ride.user_id;
+  const isFavoriteDriver = !isOwner && favorites.includes(ride.user_id);
   const pendingRequests = requests.filter((r) => r.status === "pending");
   const myRequest = requests.find((r) => r.passenger_id === user?.id);
   const rideIsOngoing = isRideOngoing(ride);
