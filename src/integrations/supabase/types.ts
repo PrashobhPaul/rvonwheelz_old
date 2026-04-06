@@ -83,6 +83,44 @@ export type Database = {
         }
         Relationships: []
       }
+      ride_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_quick_action: boolean
+          message: string
+          ride_id: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_quick_action?: boolean
+          message: string
+          ride_id: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_quick_action?: boolean
+          message?: string
+          ride_id?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_messages_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ride_requests: {
         Row: {
           id: string

@@ -3,11 +3,12 @@ import { useRides, useRequests, useCompletionStats } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import { RideCard } from "@/components/RideCard";
 import { Badge } from "@/components/ui/badge";
-import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio, Clock, MapPin, CalendarCheck } from "lucide-react";
+import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio, Clock, MapPin, CalendarCheck, MessageCircle } from "lucide-react";
 import { getDirectionShort, isRideOngoing } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { getFrequentPatterns, FrequentPattern } from "@/lib/habitTracker";
 import { Button } from "@/components/ui/button";
+import { RideChat } from "@/components/RideChat";
 
 interface MyRidesProps {
   onSwitchToHome?: () => void;
@@ -19,6 +20,7 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(user?.id);
   const [patterns, setPatterns] = useState(getFrequentPatterns());
+  const [chatRide, setChatRide] = useState<any>(null);
 
   useEffect(() => {
     setPatterns(getFrequentPatterns());
@@ -186,17 +188,32 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
           <p className="text-sm text-muted-foreground py-4 text-center">You haven't offered any rides yet.</p>
         ) : (
           <div className="space-y-3">
-            {myRides.map((ride) => (
-              <div key={ride.id} className="relative">
-                {isRideOngoing(ride) && (
-                  <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
-                    <Radio className="w-3 h-3" />
-                    Ongoing
-                  </Badge>
-                )}
-                <RideCard ride={ride} />
-              </div>
-            ))}
+            {myRides.map((ride) => {
+              const hasApproved = allRequests.some((r) => r.ride_id === ride.id && r.status === "approved");
+              const rideEnd = new Date(new Date(`${ride.date}T${ride.time}`).getTime() + 60 * 60000);
+              const chatAvailable = hasApproved && new Date() < rideEnd;
+              return (
+                <div key={ride.id} className="relative">
+                  {isRideOngoing(ride) && (
+                    <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
+                      <Radio className="w-3 h-3" />
+                      Ongoing
+                    </Badge>
+                  )}
+                  <RideCard ride={ride} />
+                  {chatAvailable && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-1 w-full text-xs gap-1.5"
+                      onClick={() => setChatRide(ride)}
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" /> Open Ride Chat
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
@@ -213,50 +230,68 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
           <p className="text-sm text-muted-foreground py-4 text-center">You haven't requested any seats yet.</p>
         ) : (
           <div className="space-y-2">
-            {myRequests.map((req) => (
-              <div key={req.id} className="relative rounded-lg border bg-card p-3 space-y-1.5">
-                {req.ride && isRideOngoing(req.ride) && (
-                  <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
-                    <Radio className="w-3 h-3" />
-                    Ongoing
-                  </Badge>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">
-                    {req.ride ? req.ride.name : "Unknown driver"}
-                  </span>
-                  <Badge
-                    variant={
-                      req.status === "approved" ? "default" :
-                      req.status === "rejected" ? "destructive" :
-                      req.status === "cancelled" ? "outline" :
-                      "secondary"
-                    }
-                    className="text-xs"
-                  >
-                    {req.status === "approved" ? "✅ Approved" :
-                     req.status === "rejected" ? "❌ Rejected" :
-                     req.status === "cancelled" ? "Cancelled" :
-                     "⏳ Pending"}
-                  </Badge>
-                </div>
-                {req.ride && (
-                  <div className="space-y-0.5">
-                    <p className="text-xs text-muted-foreground">
-                      {req.ride.date} · {req.ride.time}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">📍 {req.ride.destination || "Destination"}</span>
-                      {" · "}
-                      🚗 {req.ride.vehicle || "Car"}
-                    </p>
+            {myRequests.map((req) => {
+              const chatAvailableForReq = req.status === "approved" && req.ride && new Date() < new Date(new Date(`${req.ride.date}T${req.ride.time}`).getTime() + 60 * 60000);
+              return (
+                <div key={req.id} className="relative rounded-lg border bg-card p-3 space-y-1.5">
+                  {req.ride && isRideOngoing(req.ride) && (
+                    <Badge className="absolute -top-2 right-2 z-10 bg-green-600 hover:bg-green-700 text-white text-[10px] px-2 py-0.5 animate-pulse gap-1">
+                      <Radio className="w-3 h-3" />
+                      Ongoing
+                    </Badge>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-foreground">
+                      {req.ride ? req.ride.name : "Unknown driver"}
+                    </span>
+                    <Badge
+                      variant={
+                        req.status === "approved" ? "default" :
+                        req.status === "rejected" ? "destructive" :
+                        req.status === "cancelled" ? "outline" :
+                        "secondary"
+                      }
+                      className="text-xs"
+                    >
+                      {req.status === "approved" ? "✅ Approved" :
+                       req.status === "rejected" ? "❌ Rejected" :
+                       req.status === "cancelled" ? "Cancelled" :
+                       "⏳ Pending"}
+                    </Badge>
                   </div>
-                )}
-              </div>
-            ))}
+                  {req.ride && (
+                    <div className="space-y-0.5">
+                      <p className="text-xs text-muted-foreground">
+                        {req.ride.date} · {req.ride.time}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">📍 {req.ride.destination || "Destination"}</span>
+                        {" · "}
+                        🚗 {req.ride.vehicle || "Car"}
+                      </p>
+                    </div>
+                  )}
+                  {chatAvailableForReq && req.ride && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs gap-1.5 mt-1"
+                      onClick={() => setChatRide(req.ride)}
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" /> Open Ride Chat
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
+
+      {/* Chat Overlay */}
+      {chatRide && (
+        <RideChat ride={chatRide} onClose={() => setChatRide(null)} />
+      )}
     </div>
   );
 }
