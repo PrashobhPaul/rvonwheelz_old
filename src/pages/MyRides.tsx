@@ -8,6 +8,7 @@ import { getDirectionShort, isRideOngoing } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { getFrequentPatterns, FrequentPattern } from "@/lib/habitTracker";
 import { Button } from "@/components/ui/button";
+import { RideChat } from "@/components/RideChat";
 
 interface MyRidesProps {
   onSwitchToHome?: () => void;
