@@ -225,7 +225,7 @@ export function RideCard({ ride }: RideCardProps) {
               {requests.map((req) => (
                 <div key={req.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-sm">
                   <div className="flex flex-wrap items-center gap-1">
-                    <Link to={`/profile/${req.passenger_id}`} className="font-medium text-foreground hover:text-primary transition-colors">
+                    <Link to={`/profile/${req.passenger_id}`} className="font-medium text-primary underline underline-offset-2 hover:text-primary/80 transition-colors">
                       {req.passenger_name}
                     </Link>
                     <span className="text-muted-foreground text-xs">{req.passenger_phone}</span>
