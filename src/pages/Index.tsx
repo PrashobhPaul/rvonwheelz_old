@@ -70,11 +70,8 @@ export default function Index() {
         return rideArea === filterArea;
       })
       .filter((r) => getMinutesUntilRide(r as any) >= 15)
-      .filter((r) => r.user_id !== user?.id) // don't score own rides, but keep them
-      .concat(rides.filter((r) => r.user_id === user?.id && r.direction === filterDirection && (!filterDate || r.date === filterDate) && getMinutesUntilRide(r as any) >= 15 && (filterArea ? (r.destination || "").split("–")[0].trim() === filterArea : true)))
       .map((r) => ({ ...r, _score: r.user_id === user?.id ? -1 : scoreRide(r, scoringCtx) }))
       .sort((a, b) => {
-        // Own rides at the end, then sort by score desc, then time asc
         if (a._score !== b._score) return b._score - a._score;
         return a.time.localeCompare(b.time);
       });
