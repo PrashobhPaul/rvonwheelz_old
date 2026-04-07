@@ -18,14 +18,19 @@ import SettingsPage from "@/pages/Settings";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, user } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { data: favorites = [] } = useFavorites();
   const [filterDirection, setFilterDirection] = useState<Ride["direction"]>("to-office");
   const [filterDestination, setFilterDestination] = useState<string>("all");
   const [filterDate, setFilterDate] = useState(getLocalToday());
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"home" | "my-rides" | "settings">("home");
   const userChangedDestination = useRef(false);
+
+  // Collect unique driver IDs for block lookup
+  const driverIds = useMemo(() => [...new Set(rides.map((r) => r.user_id).filter((id) => id !== user?.id))], [rides, user?.id]);
+  const { data: driverBlocks = {} } = useDriverBlocks(driverIds);
 
   // Auto-select office location from profile, but don't override manual changes
   useEffect(() => {
