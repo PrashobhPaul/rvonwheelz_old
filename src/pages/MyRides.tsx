@@ -1,9 +1,11 @@
 import { useMemo, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useRides, useRequests, useCompletionStats } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
+import { useCoRiders } from "@/hooks/useCoRiders";
 import { RideCard } from "@/components/RideCard";
 import { Badge } from "@/components/ui/badge";
-import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio, Clock, MapPin, CalendarCheck, MessageCircle } from "lucide-react";
+import { Car, TicketCheck, Loader2, TrendingUp, UserCheck, Radio, Clock, MapPin, CalendarCheck, MessageCircle, Users, ExternalLink } from "lucide-react";
 import { getDirectionShort, isRideOngoing } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { getFrequentPatterns, FrequentPattern } from "@/lib/habitTracker";
@@ -19,6 +21,7 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(user?.id);
+  const { data: coRiders = [] } = useCoRiders();
   const [patterns, setPatterns] = useState(getFrequentPatterns());
   const [chatRide, setChatRide] = useState<any>(null);
 
@@ -172,6 +175,38 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
                 <p className="text-[10px] text-muted-foreground leading-tight">Habit Consistency</p>
               </CardContent>
             </Card>
+          </div>
+        </section>
+      )}
+
+      {/* Frequent Co-Riders */}
+      {coRiders.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">Frequent Co-Riders</h2>
+          </div>
+          <div className="grid gap-2">
+            {coRiders.map((cr) => (
+              <Card key={cr.userId}>
+                <CardContent className="p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="rounded-full bg-primary/10 p-1.5 shrink-0">
+                      <Users className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{cr.name}</p>
+                      <p className="text-xs text-muted-foreground">{cr.count} ride{cr.count !== 1 ? "s" : ""} together</p>
+                    </div>
+                  </div>
+                  <Link to={`/profile/${cr.userId}`}>
+                    <Button variant="ghost" size="sm" className="text-xs gap-1 shrink-0">
+                      <ExternalLink className="w-3.5 h-3.5" /> View
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
       )}
