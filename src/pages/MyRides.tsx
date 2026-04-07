@@ -21,6 +21,7 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
   const { data: rides = [], isLoading: ridesLoading } = useRides();
   const { data: allRequests = [], isLoading: reqLoading } = useRequests();
   const { data: completionStats } = useCompletionStats(user?.id);
+  const { data: coRiders = [] } = useCoRiders();
   const [patterns, setPatterns] = useState(getFrequentPatterns());
   const [chatRide, setChatRide] = useState<any>(null);
 
