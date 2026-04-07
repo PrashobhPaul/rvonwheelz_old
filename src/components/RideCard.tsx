@@ -25,6 +25,7 @@ interface RideCardProps {
     vehicle: string;
     created_at: string;
   };
+  bestMatch?: boolean;
 }
 
 export function RideCard({ ride }: RideCardProps) {

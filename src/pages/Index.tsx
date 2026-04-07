@@ -171,7 +171,7 @@ export default function Index() {
                   <p className="text-xs text-muted-foreground">{filtered.length} ride{filtered.length !== 1 ? "s" : ""} available</p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {filtered.map((ride) => (
-                      <RideCard key={ride.id} ride={ride} />
+                      <RideCard key={ride.id} ride={ride} bestMatch={bestMatchIds.has(ride.id)} />
                     ))}
                   </div>
                 </>
