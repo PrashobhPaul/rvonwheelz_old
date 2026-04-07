@@ -25,9 +25,10 @@ interface RideCardProps {
     vehicle: string;
     created_at: string;
   };
+  bestMatch?: boolean;
 }
 
-export function RideCard({ ride }: RideCardProps) {
+export function RideCard({ ride, bestMatch }: RideCardProps) {
   const [showPhone, setShowPhone] = useState(false);
   const { user } = useAuth();
 
@@ -126,9 +127,14 @@ export function RideCard({ ride }: RideCardProps) {
   };
 
   return (
-    <Card className={`ride-card-shadow hover:ride-card-shadow-hover transition-shadow animate-slide-up ${isPast ? "opacity-60" : ""} ${isFavoriteDriver ? "ring-2 ring-yellow-400/50 bg-yellow-50/30 dark:bg-yellow-950/10" : ""}`}>
+    <Card className={`ride-card-shadow hover:ride-card-shadow-hover transition-shadow animate-slide-up ${isPast ? "opacity-60" : ""} ${isFavoriteDriver ? "ring-2 ring-yellow-400/50 bg-yellow-50/30 dark:bg-yellow-950/10" : ""} ${bestMatch && !isFavoriteDriver ? "ring-2 ring-primary/40 bg-primary/5" : ""}`}>
       <CardContent className="p-4 space-y-3">
-        {/* Header */}
+        {/* Best match label */}
+        {bestMatch && !isOwner && (
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+            <span>🎯</span> Best match for you
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Link to={`/profile/${ride.user_id}`} className="font-semibold text-primary underline underline-offset-2 hover:text-primary/80 transition-colors">{ride.name}</Link>

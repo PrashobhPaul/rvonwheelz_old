@@ -9,21 +9,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, LogOut, Loader2, Home, CarFront, Settings, Moon, Sun } from "lucide-react";
-import { useRides } from "@/hooks/useRides";
+import { useRides, useDriverBlocks } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
+import { useFavorites } from "@/hooks/useFavorites";
+import { scoreRide, BEST_MATCH_THRESHOLD } from "@/lib/rideScoring";
 import MyRides from "@/pages/MyRides";
 import SettingsPage from "@/pages/Settings";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, user } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { data: favorites = [] } = useFavorites();
   const [filterDirection, setFilterDirection] = useState<Ride["direction"]>("to-office");
   const [filterDestination, setFilterDestination] = useState<string>("all");
   const [filterDate, setFilterDate] = useState(getLocalToday());
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"home" | "my-rides" | "settings">("home");
   const userChangedDestination = useRef(false);
+
+  // Collect unique driver IDs for block lookup
+  const driverIds = useMemo(() => [...new Set(rides.map((r) => r.user_id).filter((id) => id !== user?.id))], [rides, user?.id]);
+  const { data: driverBlocks = {} } = useDriverBlocks(driverIds);
 
   // Auto-select office location from profile, but don't override manual changes
   useEffect(() => {
@@ -42,8 +49,14 @@ export default function Index() {
     ? filterDestination
     : (profile?.office_location || DEFAULT_DESTINATION);
 
+  const scoringCtx = useMemo(() => ({
+    userOfficeLocation: profile?.office_location,
+    userBlock: profile?.block,
+    favorites,
+    driverBlocks,
+  }), [profile?.office_location, profile?.block, favorites, driverBlocks]);
+
   const filtered = useMemo(() => {
-    // Extract area prefix (e.g. "HITEC City") from the selected destination
     const filterArea = filterDestination !== "all"
       ? filterDestination.split("–")[0].trim()
       : null;
@@ -57,8 +70,21 @@ export default function Index() {
         return rideArea === filterArea;
       })
       .filter((r) => getMinutesUntilRide(r as any) >= 15)
-      .sort((a, b) => a.time.localeCompare(b.time));
-  }, [rides, filterDirection, filterDate, filterDestination]);
+      .map((r) => ({ ...r, _score: r.user_id === user?.id ? -1 : scoreRide(r, scoringCtx) }))
+      .sort((a, b) => {
+        if (a._score !== b._score) return b._score - a._score;
+        return a.time.localeCompare(b.time);
+      });
+  }, [rides, filterDirection, filterDate, filterDestination, scoringCtx, user?.id]);
+
+  // Track which ride IDs are "best match"
+  const bestMatchIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const r of filtered) {
+      if ((r as any)._score >= BEST_MATCH_THRESHOLD) ids.add(r.id);
+    }
+    return ids;
+  }, [filtered]);
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -142,7 +168,7 @@ export default function Index() {
                   <p className="text-xs text-muted-foreground">{filtered.length} ride{filtered.length !== 1 ? "s" : ""} available</p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {filtered.map((ride) => (
-                      <RideCard key={ride.id} ride={ride} />
+                      <RideCard key={ride.id} ride={ride} bestMatch={bestMatchIds.has(ride.id)} />
                     ))}
                   </div>
                 </>

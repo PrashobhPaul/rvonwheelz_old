@@ -36,6 +36,27 @@ export function useRides() {
   });
 }
 
+/** Fetch block info for a list of driver user_ids */
+export function useDriverBlocks(userIds: string[]) {
+  return useQuery({
+    queryKey: ["driver-blocks", userIds.sort().join(",")],
+    queryFn: async () => {
+      if (userIds.length === 0) return {};
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("user_id, block")
+        .in("user_id", userIds);
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      for (const d of data || []) {
+        map[d.user_id] = d.block;
+      }
+      return map;
+    },
+    enabled: userIds.length > 0,
+  });
+}
+
 export function useRequests(rideId?: string) {
   return useQuery({
     queryKey: ["requests", rideId],
