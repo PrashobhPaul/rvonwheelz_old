@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, LogOut, Loader2, Home, CarFront, Settings, Moon, Sun } from "lucide-react";
-import { useRides } from "@/hooks/useRides";
+import { useRides, useDriverBlocks } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
+import { useFavorites } from "@/hooks/useFavorites";
+import { scoreRide, BEST_MATCH_THRESHOLD } from "@/lib/rideScoring";
 import MyRides from "@/pages/MyRides";
 import SettingsPage from "@/pages/Settings";
 
