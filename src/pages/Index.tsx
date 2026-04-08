@@ -28,6 +28,7 @@ export default function Index() {
   const [filterDate, setFilterDate] = useState(getLocalToday());
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"home" | "my-rides" | "settings">("home");
+  const { cancelledRide, dismiss: dismissCancelled } = useCancelledRide();
   const userChangedDestination = useRef(false);
 
   // Collect unique driver IDs for block lookup
