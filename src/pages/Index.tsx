@@ -15,6 +15,8 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { scoreRide, BEST_MATCH_THRESHOLD } from "@/lib/rideScoring";
 import MyRides from "@/pages/MyRides";
 import SettingsPage from "@/pages/Settings";
+import { RideCancelledSuggestions } from "@/components/RideCancelledSuggestions";
+import { useCancelledRide } from "@/hooks/useCancelledRide";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
@@ -26,6 +28,7 @@ export default function Index() {
   const [filterDate, setFilterDate] = useState(getLocalToday());
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"home" | "my-rides" | "settings">("home");
+  const { cancelledRide, dismiss: dismissCancelled } = useCancelledRide();
   const userChangedDestination = useRef(false);
 
   // Collect unique driver IDs for block lookup
@@ -187,6 +190,11 @@ export default function Index() {
           <SettingsPage />
         )}
       </main>
+
+      {/* Cancelled ride alternatives overlay */}
+      {cancelledRide && (
+        <RideCancelledSuggestions cancelledRide={cancelledRide} onDismiss={dismissCancelled} />
+      )}
 
       {/* Bottom Tab Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-10 bg-card border-t border-border">
