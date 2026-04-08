@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Users, Car, Phone, Trash2, ArrowRight, ArrowLeft, UserPlus, Check, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useRequests, useDeleteRide, useCreateRequest, useUpdateRequestStatus, useProfile, useRides } from "@/hooks/useRides";
+import { showCancelledAlternatives } from "@/hooks/useCancelledRide";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorites, useToggleFavorite } from "@/hooks/useFavorites";
 import { Star } from "lucide-react";
