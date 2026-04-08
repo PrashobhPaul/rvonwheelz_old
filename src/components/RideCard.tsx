@@ -224,6 +224,25 @@ export function RideCard({ ride, bestMatch }: RideCardProps) {
             </Button>
           )}
 
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-xs"
+            asChild
+          >
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ride.destination || "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {isOwner ? (
+                <><Navigation className="w-3.5 h-3.5 mr-1" /> Navigate</>
+              ) : (
+                <><MapPin className="w-3.5 h-3.5 mr-1" /> Open in Maps</>
+              )}
+            </a>
+          </Button>
+
           {!isOwner && !isPast && !rideIsOngoing && availableSeats > 0 && !hasOngoingRide && (!myRequest || myRequest.status === "cancelled" || myRequest.status === "rejected") && (
             <Button variant="default" size="sm" onClick={handleRequest} disabled={requestMutation.isPending} className="text-xs">
               <UserPlus className="w-3.5 h-3.5 mr-1" /> {requestMutation.isPending ? "Sending..." : "Request Seat"}
