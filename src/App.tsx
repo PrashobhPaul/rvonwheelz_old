@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { RideNotificationListener } from "@/components/RideNotificationListener";
+import { RideReminderScheduler } from "@/components/RideReminderScheduler";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
