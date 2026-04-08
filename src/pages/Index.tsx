@@ -15,6 +15,8 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { scoreRide, BEST_MATCH_THRESHOLD } from "@/lib/rideScoring";
 import MyRides from "@/pages/MyRides";
 import SettingsPage from "@/pages/Settings";
+import { RideCancelledSuggestions } from "@/components/RideCancelledSuggestions";
+import { useCancelledRide } from "@/hooks/useCancelledRide";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
