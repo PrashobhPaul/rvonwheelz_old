@@ -92,6 +92,15 @@ export function RideNotificationListener() {
               toast.error("❌ Your seat request was rejected.");
             } else if (updated.status === "cancelled_by_driver") {
               toast.error("🚫 The driver has cancelled this ride.");
+              // Fetch the cancelled ride info and show alternatives
+              const { data: ride } = await supabase
+                .from("rides")
+                .select("id, destination, direction, date, time, name")
+                .eq("id", updated.ride_id)
+                .maybeSingle();
+              if (ride) {
+                showCancelledAlternatives(ride);
+              }
             }
           }
 

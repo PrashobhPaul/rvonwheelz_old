@@ -191,6 +191,11 @@ export default function Index() {
         )}
       </main>
 
+      {/* Cancelled ride alternatives overlay */}
+      {cancelledRide && (
+        <RideCancelledSuggestions cancelledRide={cancelledRide} onDismiss={dismissCancelled} />
+      )}
+
       {/* Bottom Tab Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-10 bg-card border-t border-border">
         <div className="container max-w-3xl mx-auto flex">

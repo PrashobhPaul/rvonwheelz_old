@@ -66,8 +66,13 @@ export function RideCard({ ride, bestMatch }: RideCardProps) {
   });
 
   const handleDelete = () => {
+    const rideInfo = { id: ride.id, destination: ride.destination, direction: ride.direction, date: ride.date, time: ride.time, name: ride.name };
     deleteMutation.mutate(ride.id, {
-      onSuccess: () => toast.success("Ride deleted"),
+      onSuccess: () => {
+        toast.success("Ride deleted");
+        // Show alternatives to affected passengers via global event
+        showCancelledAlternatives(rideInfo);
+      },
       onError: () => toast.error("Failed to delete"),
     });
   };
