@@ -4,7 +4,7 @@ import { getDirectionShort, canRejectPassenger, canCancelRequest, getMinutesUnti
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Car, Phone, Trash2, ArrowRight, ArrowLeft, UserPlus, Check, X, AlertCircle } from "lucide-react";
+import { Clock, Users, Car, Phone, Trash2, ArrowRight, ArrowLeft, UserPlus, Check, X, AlertCircle, Navigation, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useRequests, useDeleteRide, useCreateRequest, useUpdateRequestStatus, useProfile, useRides } from "@/hooks/useRides";
 import { showCancelledAlternatives } from "@/hooks/useCancelledRide";
