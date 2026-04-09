@@ -126,6 +126,9 @@ export function useCompletionStats(userId?: string) {
     queryFn: async () => {
       if (!userId) return { ridesGiven: 0, ridesTaken: 0 };
 
+      // Log any pending completions for past rides not yet recorded
+      await supabase.rpc("log_pending_completions", { _user_id: userId });
+
       const { data, error } = await supabase
         .from("ride_completion_log")
         .select("role")

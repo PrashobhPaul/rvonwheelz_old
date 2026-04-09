@@ -42,18 +42,9 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
     })).sort((a, b) => (b.requested_at || "").localeCompare(a.requested_at || ""));
   }, [allRequests, rides, user]);
 
-  // Current active rides + historical completions
-  const now = new Date();
-  const activePastGiven = myRides.filter((r) => {
-    const isPast = new Date(`${r.date}T${r.time}`) < now;
-    const hasApprovedPassenger = allRequests.some(
-      (req) => req.ride_id === r.id && req.status === "approved"
-    );
-    return isPast && hasApprovedPassenger;
-  }).length;
-  const activePastTaken = myRequests.filter((r) => r.status === "approved" && r.ride && new Date(`${r.ride.date}T${r.ride.time}`) < now).length;
-  const ridesGivenCount = (completionStats?.ridesGiven || 0) + activePastGiven;
-  const ridesTakenCount = (completionStats?.ridesTaken || 0) + activePastTaken;
+  // Lifetime stats from completion log (persisted, never decremented)
+  const ridesGivenCount = completionStats?.ridesGiven || 0;
+  const ridesTakenCount = completionStats?.ridesTaken || 0;
 
   // Derive pattern stats
   const mostFrequentTime = useMemo(() => {
