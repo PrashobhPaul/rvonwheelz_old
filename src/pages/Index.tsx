@@ -169,7 +169,13 @@ export default function Index() {
               </div>
             </div>
 
-            {showForm && <OfferRideForm onClose={() => setShowForm(false)} />}
+            {hasOngoingRide && (
+              <p className="text-xs text-destructive font-medium flex items-center gap-1">
+                ⚠️ You have an ongoing ride. Offering new rides is disabled until it ends.
+              </p>
+            )}
+
+            {showForm && !hasOngoingRide && <OfferRideForm onClose={() => setShowForm(false)} />}
 
             <div className="space-y-3">
               {isLoading ? (
