@@ -19,7 +19,7 @@ interface OfferRideFormProps {
 export function OfferRideForm({ onClose }: OfferRideFormProps) {
   const { user, profile } = useAuth();
   const [direction, setDirection] = useState<Ride["direction"]>("to-office");
-  const [destination, setDestination] = useState(DEFAULT_DESTINATION);
+  const [destination, setDestination] = useState(profile?.office_location || DEFAULT_DESTINATION);
   const [date, setDate] = useState(getLocalToday());
   const [time, setTime] = useState("08:30");
   const [vehicleType, setVehicleType] = useState<"car" | "bike">("car");
