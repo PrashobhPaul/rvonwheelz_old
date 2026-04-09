@@ -145,6 +145,23 @@ export function useCompletionStats(userId?: string) {
   });
 }
 
+export function useRideHistory(userId?: string) {
+  return useQuery({
+    queryKey: ["rideHistory", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase
+        .from("ride_completion_log")
+        .select("*")
+        .eq("user_id", userId)
+        .order("ride_date", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!userId,
+  });
+}
+
 export function useCreateRequest() {
   const qc = useQueryClient();
   const { user, profile } = useAuth();
