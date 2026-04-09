@@ -316,6 +316,55 @@ export default function MyRides({ onSwitchToHome }: MyRidesProps) {
         )}
       </section>
 
+      {/* Ride History */}
+      {rideHistory.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <History className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">Ride History</h2>
+            <Badge variant="secondary" className="text-xs">{rideHistory.length}</Badge>
+          </div>
+          <div className="space-y-2">
+            {(showAllHistory ? rideHistory : rideHistory.slice(0, 3)).map((entry) => (
+              <Card key={entry.id}>
+                <CardContent className="p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="rounded-full bg-primary/10 p-1.5 shrink-0">
+                      {entry.role === "driver" ? (
+                        <Car className="w-4 h-4 text-primary" />
+                      ) : (
+                        <TicketCheck className="w-4 h-4 text-primary" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        📍 {entry.destination || "Unknown"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {entry.ride_date} · {entry.direction || "—"}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-xs shrink-0">
+                    {entry.role === "driver" ? "🚗 Driver" : "🧑‍🤝‍🧑 Rider"}
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          {rideHistory.length > 3 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs"
+              onClick={() => setShowAllHistory(!showAllHistory)}
+            >
+              {showAllHistory ? "Show Less" : `View All History (${rideHistory.length})`}
+            </Button>
+          )}
+        </section>
+      )}
+
       {/* Chat Overlay */}
       {chatRide && (
         <RideChat ride={chatRide} onClose={() => setChatRide(null)} />
