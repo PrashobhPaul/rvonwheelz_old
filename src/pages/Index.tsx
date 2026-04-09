@@ -43,6 +43,17 @@ export default function Index() {
     }
   }, [profile?.office_location]);
 
+  // Detect if user has an ongoing ride (as driver or approved passenger)
+  const hasOngoingRide = useMemo(() => {
+    return rides.some((r) => {
+      if (!isRideOngoing(r)) return false;
+      if (r.user_id === user?.id) return true;
+      return allRequests.some(
+        (req) => req.ride_id === r.id && req.passenger_id === user?.id && req.status === "approved"
+      );
+    });
+  }, [rides, allRequests, user?.id]);
+
   const handleDestinationChange = (value: string) => {
     userChangedDestination.current = true;
     setFilterDestination(value);
