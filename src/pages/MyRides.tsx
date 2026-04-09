@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useRides, useRequests, useCompletionStats } from "@/hooks/useRides";
+import { useRides, useRequests, useCompletionStats, useRideHistory } from "@/hooks/useRides";
 import { useAuth } from "@/hooks/useAuth";
 import { useCoRiders } from "@/hooks/useCoRiders";
 import { RideCard } from "@/components/RideCard";
