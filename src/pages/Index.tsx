@@ -20,6 +20,7 @@ import { useCancelledRide } from "@/hooks/useCancelledRide";
 
 export default function Index() {
   const { data: rides = [], isLoading } = useRides();
+  const { data: allRequests = [] } = useRequests();
   const { profile, signOut, user } = useAuth();
   const { theme, setTheme } = useTheme();
   const { data: favorites = [] } = useFavorites();
