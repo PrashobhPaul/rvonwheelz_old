@@ -129,7 +129,7 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="seats">Seats</Label>
-              <Input id="seats" type="number" min={1} max={vehicleType === "car" ? 6 : 2} value={seats} onChange={(e) => setSeats(Number(e.target.value))} required />
+              <Input id="seats" type="number" min={1} max={vehicleType === "car" ? 6 : 2} value={seats} onChange={(e) => setSeats(Number(e.target.value))} required disabled={vehicleType === "bike"} />
             </div>
           </div>
           <div className="space-y-1.5">
