@@ -56,6 +56,10 @@ export default function Auth() {
           vehicle_name: "",
           registration_number: "",
           office_location: "Nanakramguda – Sattva Knowledge City Main Gate",
+          car_name: "",
+          car_registration: "",
+          bike_name: "",
+          bike_registration: "",
         });
         toast.success("Registration successful! You're now logged in.");
       } else {
