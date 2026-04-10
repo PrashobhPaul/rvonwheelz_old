@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Car, X } from "lucide-react";
+import { Car, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateRide, useRides, useRequests } from "@/hooks/useRides";
 
@@ -24,17 +24,13 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
   const [time, setTime] = useState("08:30");
   const [vehicleType, setVehicleType] = useState<"car" | "bike">("car");
   const [seats, setSeats] = useState(3);
-  const [vehicle, setVehicle] = useState("");
   const mutation = useCreateRide();
   const { data: allRides = [] } = useRides();
   const { data: allRequests = [] } = useRequests();
 
-  // Check if user has an ongoing ride (as driver or approved passenger)
   const hasOngoingRide = allRides.some((r) => {
     if (!isRideOngoing(r)) return false;
-    // User is the driver
     if (r.user_id === user?.id) return true;
-    // User is an approved passenger
     return allRequests.some(
       (req) => req.ride_id === r.id && req.passenger_id === user?.id && req.status === "approved"
     );
@@ -46,16 +42,18 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
     }
   }, [profile?.office_location]);
 
-  useEffect(() => {
-    if (profile?.vehicle_name && !vehicle) {
-      setVehicle(profile.vehicle_name);
-    }
-  }, [profile]);
-
   const handleVehicleTypeChange = (type: "car" | "bike") => {
     setVehicleType(type);
     setSeats(type === "car" ? 3 : 1);
   };
+
+  // Derive vehicle info from profile based on selected type
+  const vehicleName = vehicleType === "car" ? (profile?.car_name || "") : (profile?.bike_name || "");
+  const vehicleReg = vehicleType === "car" ? (profile?.car_registration || "") : (profile?.bike_registration || "");
+  const hasVehicleDetails = vehicleName.trim() !== "" && vehicleReg.trim() !== "";
+  const vehicleDisplay = hasVehicleDetails
+    ? `${vehicleType === "car" ? "🚗" : "🏍️"} ${vehicleName} • ${vehicleReg}`
+    : "";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,12 +61,17 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
       toast.error("You have an ongoing ride. You cannot offer a new ride until it ends.");
       return;
     }
+    if (!hasVehicleDetails) {
+      toast.error("Please complete vehicle details in Profile");
+      return;
+    }
     if (!canCreateRide(date, time)) {
       toast.error("Ride must start at least 30 minutes from now");
       return;
     }
+    const vehicleLabel = `${vehicleName} (${vehicleReg})`;
     mutation.mutate(
-      { direction, destination, date, time, seats, vehicle: vehicle.trim() || "Car" },
+      { direction, destination, date, time, seats, vehicle: vehicleLabel },
       {
         onSuccess: () => {
           recordHabit({ time, direction, destination, action: "offered", date });
@@ -118,7 +121,20 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
               <Button type="button" variant={vehicleType === "bike" ? "default" : "outline"} size="sm" onClick={() => handleVehicleTypeChange("bike")} className="flex-1">🏍️ Bike</Button>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+
+          {/* Vehicle details display */}
+          {hasVehicleDetails ? (
+            <div className="rounded-lg border bg-muted/50 px-3 py-2.5 text-sm font-medium text-foreground">
+              {vehicleDisplay}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 flex items-center gap-2 text-sm text-destructive">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              Please add {vehicleType} details in Profile
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="date">Date</Label>
               <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
@@ -127,16 +143,14 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
               <Label htmlFor="time">Time</Label>
               <Input id="time" type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
             </div>
+          </div>
+          {vehicleType === "car" && (
             <div className="space-y-1.5">
               <Label htmlFor="seats">Seats</Label>
-              <Input id="seats" type="number" min={1} max={vehicleType === "car" ? 6 : 2} value={seats} onChange={(e) => setSeats(Number(e.target.value))} required disabled={vehicleType === "bike"} />
+              <Input id="seats" type="number" min={1} max={6} value={seats} onChange={(e) => setSeats(Number(e.target.value))} required />
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="vehicle">Vehicle Name (optional)</Label>
-            <Input id="vehicle" value={vehicle} onChange={(e) => setVehicle(e.target.value)} placeholder={vehicleType === "car" ? "e.g. Hyundai i20" : "e.g. Honda Activa"} maxLength={50} />
-          </div>
-          <Button type="submit" className="w-full" disabled={mutation.isPending}>
+          )}
+          <Button type="submit" className="w-full" disabled={mutation.isPending || !hasVehicleDetails}>
             {mutation.isPending ? "Creating..." : "Offer Ride"}
           </Button>
         </form>

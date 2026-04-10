@@ -16,7 +16,11 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          bike_name: string
+          bike_registration: string
           block: string
+          car_name: string
+          car_registration: string
           created_at: string
           flat_number: string
           id: string
@@ -28,7 +32,11 @@ export type Database = {
           vehicle_name: string
         }
         Insert: {
+          bike_name?: string
+          bike_registration?: string
           block: string
+          car_name?: string
+          car_registration?: string
           created_at?: string
           flat_number: string
           id?: string
@@ -40,7 +48,11 @@ export type Database = {
           vehicle_name?: string
         }
         Update: {
+          bike_name?: string
+          bike_registration?: string
           block?: string
+          car_name?: string
+          car_registration?: string
           created_at?: string
           flat_number?: string
           id?: string

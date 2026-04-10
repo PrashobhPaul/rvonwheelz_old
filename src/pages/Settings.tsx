@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, Plus, Trash2, Clock, ArrowRight } from "lucide-react";
+import { Loader2, Save, Plus, Trash2, Clock, ArrowRight, Car, Bike } from "lucide-react";
 import { toast } from "sonner";
 import { getFrequentPatterns, FrequentPattern, recordHabit, deletePattern } from "@/lib/habitTracker";
 import { HOME_LOCATION, DESTINATIONS, DEFAULT_DESTINATION } from "@/lib/types";
@@ -34,13 +34,6 @@ function formatTime12h(time24: string): string {
   return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
 }
 
-function getRouteLabel(direction: "to-office" | "to-home", destination: string) {
-  const short = destination.length > 30 ? destination.slice(0, 28) + "…" : destination;
-  const homeShort = HOME_LOCATION.split(",")[0];
-  if (direction === "to-office") return { from: homeShort, to: short };
-  return { from: short, to: homeShort };
-}
-
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
 function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; open: boolean; onOpenChange: (v: boolean) => void }) {
@@ -62,7 +55,6 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
       return;
     }
     const from = direction === "to-office" ? HOME_LOCATION : destination;
-    const to = direction === "to-office" ? destination : HOME_LOCATION;
     const today = new Date().toISOString().slice(0, 10);
     recordHabit({ time, direction, destination, from, action, date: today, days: selectedDays });
     recordHabit({ time, direction, destination, from, action, date: today, days: selectedDays });
@@ -72,10 +64,6 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
     setTime("08:00");
     setSelectedDays(["Mon", "Tue", "Wed", "Thu", "Fri"]);
     onAdd();
-  };
-
-  const handleDirectionChange = (v: string) => {
-    setDirection(v as "to-office" | "to-home");
   };
 
   return (
@@ -102,7 +90,7 @@ function AddRoutineDialog({ onAdd, open, onOpenChange }: { onAdd: () => void; op
           </div>
           <div className="space-y-1.5">
             <Label>Type</Label>
-            <Select value={direction} onValueChange={handleDirectionChange}>
+            <Select value={direction} onValueChange={(v) => setDirection(v as "to-office" | "to-home")}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="to-office">Going</SelectItem>
@@ -163,6 +151,10 @@ export default function Settings() {
   const [vehicleName, setVehicleName] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [officeLocation, setOfficeLocation] = useState(DEFAULT_DESTINATION);
+  const [carName, setCarName] = useState("");
+  const [carRegistration, setCarRegistration] = useState("");
+  const [bikeName, setBikeName] = useState("");
+  const [bikeRegistration, setBikeRegistration] = useState("");
   const [patterns, setPatterns] = useState<FrequentPattern[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
@@ -177,6 +169,10 @@ export default function Settings() {
       setVehicleName(profile.vehicle_name || "");
       setRegistrationNumber(profile.registration_number || "");
       setOfficeLocation(profile.office_location || DEFAULT_DESTINATION);
+      setCarName(profile.car_name || "");
+      setCarRegistration(profile.car_registration || "");
+      setBikeName(profile.bike_name || "");
+      setBikeRegistration(profile.bike_registration || "");
     }
   }, [profile]);
 
@@ -197,6 +193,10 @@ export default function Settings() {
         vehicle_name: vehicleName.trim(),
         registration_number: registrationNumber.trim(),
         office_location: officeLocation,
+        car_name: carName.trim(),
+        car_registration: carRegistration.trim().toUpperCase(),
+        bike_name: bikeName.trim(),
+        bike_registration: bikeRegistration.trim().toUpperCase(),
       });
       toast.success("Profile updated!");
     } catch (err: any) {
@@ -283,14 +283,43 @@ export default function Settings() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="s-vehicle">Vehicle Name</Label>
-              <Input id="s-vehicle" value={vehicleName} onChange={(e) => setVehicleName(e.target.value)} placeholder="e.g. Hyundai i20, Honda Activa" maxLength={50} />
+
+            {/* Car Details Section */}
+            <div className="space-y-3 rounded-lg border bg-muted/30 p-3">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Car className="w-4 h-4 text-primary" />
+                Car Details <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="s-car-name">Car Name</Label>
+                  <Input id="s-car-name" value={carName} onChange={(e) => setCarName(e.target.value)} placeholder="e.g. Ford Ecosport" maxLength={50} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="s-car-reg">Registration No.</Label>
+                  <Input id="s-car-reg" value={carRegistration} onChange={(e) => setCarRegistration(e.target.value.toUpperCase())} placeholder="e.g. TS08FZ1868" maxLength={15} />
+                </div>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="s-reg">Registration Number</Label>
-              <Input id="s-reg" value={registrationNumber} onChange={(e) => setRegistrationNumber(e.target.value.toUpperCase())} placeholder="e.g. TS09EA1234" maxLength={15} />
+
+            {/* Bike Details Section */}
+            <div className="space-y-3 rounded-lg border bg-muted/30 p-3">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Bike className="w-4 h-4 text-primary" />
+                Bike Details <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="s-bike-name">Bike Name</Label>
+                  <Input id="s-bike-name" value={bikeName} onChange={(e) => setBikeName(e.target.value)} placeholder="e.g. Apache RTR" maxLength={50} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="s-bike-reg">Registration No.</Label>
+                  <Input id="s-bike-reg" value={bikeRegistration} onChange={(e) => setBikeRegistration(e.target.value.toUpperCase())} placeholder="e.g. TS09EA1234" maxLength={15} />
+                </div>
+              </div>
             </div>
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
               Save Changes
@@ -383,7 +412,6 @@ export default function Settings() {
         onAdd={refreshPatterns}
       />
 
-      {/* Confirm Clear All */}
       <AlertDialog open={confirmClearAll} onOpenChange={setConfirmClearAll}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -401,7 +429,6 @@ export default function Settings() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Confirm Delete Single */}
       <AlertDialog open={confirmDeleteIndex !== null} onOpenChange={(open) => !open && setConfirmDeleteIndex(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
