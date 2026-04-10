@@ -92,8 +92,20 @@ export function useCreateRide() {
 
 export function useDeleteRide() {
   const qc = useQueryClient();
+  const { user, profile } = useAuth();
   return useMutation({
     mutationFn: async (id: string) => {
+      // Post system message before deleting (FK cascade will remove it, but realtime picks it up)
+      if (user && profile) {
+        await supabase.from("ride_messages").insert({
+          ride_id: id,
+          user_id: user.id,
+          user_name: "System",
+          message: "🚫 Ride has been cancelled by the driver",
+          is_quick_action: true,
+        }).catch(() => {});
+      }
+
       // Before deleting, notify approved co-commuters by changing status
       const { data: approvedReqs } = await supabase
         .from("ride_requests")
