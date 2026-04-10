@@ -85,6 +85,7 @@ export function RideNotificationListener() {
 
           const key = `requp-${updated.id}-${updated.status}`;
 
+          // Notify the passenger whose request was updated
           if (updated.passenger_id === user.id && dedup(key)) {
             if (updated.status === "approved") {
               toast.success("✅ Your seat request was approved!");
@@ -92,7 +93,6 @@ export function RideNotificationListener() {
               toast.error("❌ Your seat request was rejected.");
             } else if (updated.status === "cancelled_by_driver") {
               toast.error("🚫 The driver has cancelled this ride.");
-              // Fetch the cancelled ride info and show alternatives
               const { data: ride } = await supabase
                 .from("rides")
                 .select("id, destination, direction, date, time, name")
@@ -104,6 +104,21 @@ export function RideNotificationListener() {
             }
           }
 
+          // Notify other passengers when someone new is approved (joined)
+          if (updated.status === "approved" && updated.passenger_id !== user.id) {
+            const { data: myReqs } = await supabase
+              .from("ride_requests")
+              .select("id")
+              .eq("ride_id", updated.ride_id)
+              .eq("passenger_id", user.id)
+              .eq("status", "approved");
+
+            if (myReqs && myReqs.length > 0 && dedup(`join-${updated.id}`)) {
+              toast.info(`👋 ${updated.passenger_name} has joined the ride!`, { duration: 6000 });
+            }
+          }
+
+          // Notify driver + other passengers when someone cancels
           if (updated.status === "cancelled" && updated.passenger_id !== user.id) {
             const { data: ride } = await supabase
               .from("rides")
@@ -111,8 +126,25 @@ export function RideNotificationListener() {
               .eq("id", updated.ride_id)
               .single();
 
-            if (ride?.user_id === user.id && dedup(key)) {
-              toast.info(`⚠️ ${updated.passenger_name} cancelled their seat.`, { duration: 6000 });
+            if (ride) {
+              // Notify driver
+              if (ride.user_id === user.id && dedup(key)) {
+                toast.info(`⚠️ ${updated.passenger_name} cancelled their seat.`, { duration: 6000 });
+              }
+
+              // Notify other approved passengers
+              if (ride.user_id !== user.id) {
+                const { data: myReqs } = await supabase
+                  .from("ride_requests")
+                  .select("id")
+                  .eq("ride_id", updated.ride_id)
+                  .eq("passenger_id", user.id)
+                  .eq("status", "approved");
+
+                if (myReqs && myReqs.length > 0 && dedup(`left-${updated.id}`)) {
+                  toast.info(`⚠️ ${updated.passenger_name} is no longer joining this ride.`, { duration: 6000 });
+                }
+              }
             }
           }
 
