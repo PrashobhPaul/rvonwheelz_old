@@ -60,6 +60,10 @@ export default function Auth() {
           car_registration: "",
           bike_name: "",
           bike_registration: "",
+          avatar_url: "",
+          car_color: "",
+          bike_color: "",
+          languages: [],
         });
         toast.success("Registration successful! You're now logged in.");
       } else {
