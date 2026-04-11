@@ -7,9 +7,10 @@ import { getDirectionShort, HOME_LOCATION } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Car, TrendingUp, UserCheck, Clock, ArrowRight, Bike, Star } from "lucide-react";
+import { ArrowLeft, Car, TrendingUp, UserCheck, Clock, ArrowRight, Bike, Star, Globe } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { UserAvatar } from "@/components/UserAvatar";
 
 export default function PublicProfile() {
   const { userId } = useParams<{ userId: string }>();
@@ -67,6 +68,10 @@ export default function PublicProfile() {
     );
   }
 
+  const hasCarDetails = profile.car_name && profile.car_registration;
+  const hasBikeDetails = profile.bike_name && profile.bike_registration;
+  const profileLanguages: string[] = (profile as any).languages || [];
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-primary px-4 py-4 text-primary-foreground">
@@ -81,15 +86,18 @@ export default function PublicProfile() {
       <main className="container max-w-3xl mx-auto px-4 py-5 space-y-5">
         {/* Name & Block */}
         <div className="text-center space-y-1">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-            <span className="text-2xl font-bold text-primary">
-              {profile.name?.charAt(0)?.toUpperCase() || "?"}
-            </span>
+          <div className="flex justify-center mb-3">
+            <UserAvatar name={profile.name} avatarUrl={(profile as any).avatar_url} size="lg" />
           </div>
           <h2 className="text-xl font-bold text-foreground">{profile.name}</h2>
           <p className="text-sm text-muted-foreground">
             Block {profile.block}, Flat {profile.flat_number}
           </p>
+          {isFavorite && (
+            <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+              ⭐ Preferred
+            </Badge>
+          )}
           {!isOwnProfile && user && (
             <Button
               variant={isFavorite ? "default" : "outline"}
@@ -104,6 +112,22 @@ export default function PublicProfile() {
             </Button>
           )}
         </div>
+
+        {/* Languages */}
+        {profileLanguages.length > 0 && (
+          <Card>
+            <CardContent className="p-4 space-y-2">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Globe className="w-4 h-4 text-primary" /> Languages
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
+                {profileLanguages.map((lang) => (
+                  <Badge key={lang} variant="secondary" className="text-xs">{lang}</Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
@@ -132,20 +156,24 @@ export default function PublicProfile() {
         </div>
 
         {/* Vehicle Info */}
-        {(profile.vehicle_name || profile.registration_number) && (
+        {(hasCarDetails || hasBikeDetails) && (
           <Card>
-            <CardContent className="p-4 space-y-2">
+            <CardContent className="p-4 space-y-3">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Car className="w-4 h-4 text-primary" /> Vehicle Info
               </h3>
-              <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                {profile.vehicle_name && (
-                  <span>{profile.vehicle_name}</span>
-                )}
-                {profile.registration_number && (
-                  <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs">{profile.registration_number}</span>
-                )}
-              </div>
+              {hasCarDetails && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Car className="w-4 h-4 shrink-0" />
+                  <span>🚗 {profile.car_name}{(profile as any).car_color ? ` • ${(profile as any).car_color}` : ""} • {profile.car_registration}</span>
+                </div>
+              )}
+              {hasBikeDetails && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Bike className="w-4 h-4 shrink-0" />
+                  <span>🏍️ {profile.bike_name}{(profile as any).bike_color ? ` • ${(profile as any).bike_color}` : ""} • {profile.bike_registration}</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

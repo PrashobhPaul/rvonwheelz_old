@@ -50,9 +50,11 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
   // Derive vehicle info from profile based on selected type
   const vehicleName = vehicleType === "car" ? (profile?.car_name || "") : (profile?.bike_name || "");
   const vehicleReg = vehicleType === "car" ? (profile?.car_registration || "") : (profile?.bike_registration || "");
+  const vehicleColor = vehicleType === "car" ? (profile?.car_color || "") : (profile?.bike_color || "");
   const hasVehicleDetails = vehicleName.trim() !== "" && vehicleReg.trim() !== "";
+  const colorPart = vehicleColor.trim() ? ` • ${vehicleColor.trim()}` : "";
   const vehicleDisplay = hasVehicleDetails
-    ? `${vehicleType === "car" ? "🚗" : "🏍️"} ${vehicleName} • ${vehicleReg}`
+    ? `${vehicleType === "car" ? "🚗" : "🏍️"} ${vehicleName}${colorPart} • ${vehicleReg}`
     : "";
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -69,7 +71,7 @@ export function OfferRideForm({ onClose }: OfferRideFormProps) {
       toast.error("Ride must start at least 30 minutes from now");
       return;
     }
-    const vehicleLabel = `${vehicleName} (${vehicleReg})`;
+    const vehicleLabel = `${vehicleName}${vehicleColor.trim() ? ` (${vehicleColor.trim()})` : ""} (${vehicleReg})`;
     mutation.mutate(
       { direction, destination, date, time, seats, vehicle: vehicleLabel },
       {

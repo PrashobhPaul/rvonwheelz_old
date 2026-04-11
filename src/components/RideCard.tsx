@@ -12,6 +12,7 @@ import { showCancelledAlternatives } from "@/hooks/useCancelledRide";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorites, useToggleFavorite } from "@/hooks/useFavorites";
 import { Star } from "lucide-react";
+import { UserAvatar } from "@/components/UserAvatar";
 
 interface RideCardProps {
   ride: {
@@ -162,8 +163,10 @@ export function RideCard({ ride, bestMatch }: RideCardProps) {
           </div>
         )}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <Link to={`/profile/${ride.user_id}`} className="font-semibold text-primary underline underline-offset-2 hover:text-primary/80 transition-colors">{ride.name}</Link>
+          <div className="flex items-center gap-2">
+            <UserAvatar name={ride.name} avatarUrl={(driverProfile as any)?.avatar_url} size="sm" />
+            <div className="flex items-center gap-1.5">
+              <Link to={`/profile/${ride.user_id}`} className="font-semibold text-primary underline underline-offset-2 hover:text-primary/80 transition-colors">{ride.name}</Link>
             {isFavoriteDriver && (
               <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-300 dark:border-yellow-700">
                 ⭐ Preferred
@@ -180,8 +183,8 @@ export function RideCard({ ride, bestMatch }: RideCardProps) {
                 <Star className={`w-4 h-4 ${isFavoriteDriver ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
               </button>
             )}
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
             <Badge variant="outline" className="text-xs">{availableSeats}/{ride.seats} seats</Badge>
             <Badge variant="secondary" className="text-xs">
               {isToOffice ? <ArrowRight className="w-3 h-3 mr-1" /> : <ArrowLeft className="w-3 h-3 mr-1" />}
