@@ -185,6 +185,7 @@ export function RideCard({ ride, bestMatch }: RideCardProps) {
             )}
             </div>
           </div>
+          <div className="flex items-center gap-1.5">
             <Badge variant="outline" className="text-xs">{availableSeats}/{ride.seats} seats</Badge>
             <Badge variant="secondary" className="text-xs">
               {isToOffice ? <ArrowRight className="w-3 h-3 mr-1" /> : <ArrowLeft className="w-3 h-3 mr-1" />}
