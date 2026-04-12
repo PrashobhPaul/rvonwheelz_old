@@ -90,8 +90,8 @@ export default function Auth() {
             Share rides with your neighbours at Raheja Vistas Elite. Save money, reduce emissions, and build community — one ride at a time.
           </p>
           <div className="pt-4 space-y-2 text-sm opacity-75">
-            <p>🌱 A strictly open-source & non-profit initiative</p>
-            <p>by <span className="font-semibold opacity-100">Prashobh Paul</span> for Raheja Vistas Elite, Nacharam</p>
+            <p>🌱 A community initiative</p>
+            <p className="text-xs opacity-75">Built with ❤️ by <span className="font-semibold opacity-100">Prashobh Paul</span></p>
           </div>
         </div>
       </div>
