@@ -10,11 +10,11 @@ function today(offsetDays = 0) {
 }
 
 const SEED_RIDES: Ride[] = [
-  { id: "seed-1", name: "Ravi Kumar", phone: "9876543210", direction: "to-office", destination: "Nanakramguda – Sattva Knowledge City Main Gate", date: today(0), time: "08:30", seats: 3, vehicle: "Car - Hyundai i20", createdAt: new Date().toISOString() },
-  { id: "seed-2", name: "Priya Sharma", phone: "9123456789", direction: "to-office", destination: "HITEC City – Mindspace Main Gate", date: today(0), time: "09:00", seats: 1, vehicle: "Bike", createdAt: new Date().toISOString() },
+  { id: "seed-1", name: "Ravi Kumar", phone: "9876543210", direction: "to-office", destination: "HITECH City – Knowledge City Main Gate", date: today(0), time: "08:30", seats: 3, vehicle: "Car - Hyundai i20", createdAt: new Date().toISOString() },
+  { id: "seed-2", name: "Priya Sharma", phone: "9123456789", direction: "to-office", destination: "HITECH City – Mindspace Main Gate", date: today(0), time: "09:00", seats: 1, vehicle: "Bike", createdAt: new Date().toISOString() },
   { id: "seed-3", name: "Arun Reddy", phone: "9988776655", direction: "to-home", destination: "Gachibowli – Biodiversity Junction", date: today(0), time: "18:00", seats: 2, vehicle: "Car - Maruti Swift", createdAt: new Date().toISOString() },
   { id: "seed-4", name: "Sneha Patel", phone: "9001122334", direction: "to-home", destination: "Financial District – Wipro Circle Junction", date: today(0), time: "18:30", seats: 3, vehicle: "Car - Honda City", createdAt: new Date().toISOString() },
-  { id: "seed-5", name: "Kiran Rao", phone: "9556677889", direction: "to-office", destination: "HITEC City – Cyber Towers Junction", date: today(1), time: "08:00", seats: 2, vehicle: "Car - Tata Nexon", createdAt: new Date().toISOString() },
+  { id: "seed-5", name: "Kiran Rao", phone: "9556677889", direction: "to-office", destination: "HITECH City – Cyber Towers Junction", date: today(1), time: "08:00", seats: 2, vehicle: "Car - Tata Nexon", createdAt: new Date().toISOString() },
 ];
 
 // ─── Rides ───

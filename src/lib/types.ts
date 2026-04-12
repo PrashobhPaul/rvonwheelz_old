@@ -23,14 +23,15 @@ export interface RideRequest {
 export const HOME_LOCATION = "Raheja Vistas Elite, Nacharam";
 
 export const DESTINATIONS = [
-  "HITEC City – Mindspace Main Gate",
-  "Raidurg – Metro Station Gate",
-  "HITEC City – ITC Kohenur Junction",
-  "Nanakramguda – Sattva Knowledge City Main Gate",
-  "Raidurg – Knowledge City Gate 3 & 4",
-  "HITEC City – iLabs / Inorbit Mall Junction",
-  "HITEC City – Cyber Towers Junction",
-  "HITEC City – Metro Station",
+  "HITECH City – Mindspace Main Gate",
+  "HITECH City – Raidurg Metro Station / Lemon Tree Hotel",
+  "HITECH City – ITC Kohenur Junction",
+  "HITECH City – Knowledge City Main Gate",
+  "HITECH City – Knowledge City Gate 3 & 4",
+  "HITECH City – iLabs / Inorbit Mall Junction",
+  "HITECH City – Cyber Towers Junction",
+  "HITECH City – Metro Station",
+  "HITECH City – IKEA Circle Junction",
   "Financial District – Wipro Circle Junction",
   "Financial District – Nanakramguda Main Junction",
   "Financial District – WaveRock SEZ Entry",
@@ -41,7 +42,6 @@ export const DESTINATIONS = [
   "Gachibowli – Biodiversity Junction",
   "Kondapur – Botanical Garden Entrance",
   "Kothaguda – Junction",
-  "HITEC City – IKEA Circle Junction",
   "Jubilee Hills – Checkpost Junction",
   "Shamirpet – Genome Valley Main Gate",
   "Shamirpet – IKP Knowledge Park Entry",
@@ -60,7 +60,7 @@ export const DESTINATIONS = [
   "KPHB – Main Circle Junction",
 ] as const;
 
-export const DEFAULT_DESTINATION = "Nanakramguda – Sattva Knowledge City Main Gate";
+export const DEFAULT_DESTINATION = "HITECH City – Knowledge City Main Gate";
 
 // Keep backward compat
 export const LOCATIONS = {
