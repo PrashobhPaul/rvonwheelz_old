@@ -201,10 +201,10 @@ export default function Index() {
               )}
             </div>
 
-            <footer className="text-center pt-6 pb-4 text-xs text-muted-foreground border-t space-y-1">
-              <p>🌱 Share rides, reduce emissions, save money</p>
-              <p>A strictly open-source & non-profit initiative</p>
-              <p>by <span className="font-medium text-foreground">Prashobh Paul</span> for Raheja Vistas Elite, Nacharam</p>
+            <footer className="text-center pt-6 pb-4 text-muted-foreground border-t space-y-1.5">
+              <p className="text-sm font-semibold">🌱 Share rides, reduce emissions, save together</p>
+              <p className="text-xs">A community initiative for Raheja Vistas Elite, Nacharam</p>
+              <p className="text-[11px] opacity-60">Built with ❤️ by Prashobh Paul</p>
             </footer>
           </>
         ) : activeTab === "my-rides" ? (

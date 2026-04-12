@@ -170,10 +170,10 @@ export default function Auth() {
               </button>
             </div>
 
-            <footer className="text-center pt-4 text-xs text-muted-foreground border-t mt-4 space-y-1 lg:hidden">
-              <p>🌱 Share rides, reduce emissions, save money</p>
-              <p>A strictly open-source & non-profit initiative</p>
-              <p>by <span className="font-medium text-foreground">Prashobh Paul</span> for Raheja Vistas Elite, Nacharam</p>
+            <footer className="text-center pt-4 text-muted-foreground border-t mt-4 space-y-1.5 lg:hidden">
+              <p className="text-sm font-semibold">🌱 Share rides, reduce emissions, save together</p>
+              <p className="text-xs">A community initiative for Raheja Vistas Elite, Nacharam</p>
+              <p className="text-[11px] opacity-60">Built with ❤️ by Prashobh Paul</p>
             </footer>
           </CardContent>
         </Card>
