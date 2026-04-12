@@ -90,8 +90,8 @@ export default function Auth() {
             Share rides with your neighbours at Raheja Vistas Elite. Save money, reduce emissions, and build community — one ride at a time.
           </p>
           <div className="pt-4 space-y-2 text-sm opacity-75">
-            <p>🌱 A strictly open-source & non-profit initiative</p>
-            <p>by <span className="font-semibold opacity-100">Prashobh Paul</span> for Raheja Vistas Elite, Nacharam</p>
+            <p>🌱 A community initiative</p>
+            <p className="text-xs opacity-75">Built with ❤️ by <span className="font-semibold opacity-100">Prashobh Paul</span></p>
           </div>
         </div>
       </div>
@@ -170,10 +170,10 @@ export default function Auth() {
               </button>
             </div>
 
-            <footer className="text-center pt-4 text-xs text-muted-foreground border-t mt-4 space-y-1 lg:hidden">
-              <p>🌱 Share rides, reduce emissions, save money</p>
-              <p>A strictly open-source & non-profit initiative</p>
-              <p>by <span className="font-medium text-foreground">Prashobh Paul</span> for Raheja Vistas Elite, Nacharam</p>
+            <footer className="text-center pt-4 text-muted-foreground border-t mt-4 space-y-1.5 lg:hidden">
+              <p className="text-sm font-semibold">🌱 Share rides, reduce emissions, save together</p>
+              <p className="text-xs">A community initiative for Raheja Vistas Elite, Nacharam</p>
+              <p className="text-[11px] opacity-60">Built with ❤️ by Prashobh Paul</p>
             </footer>
           </CardContent>
         </Card>
