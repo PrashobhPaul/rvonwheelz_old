@@ -3,14 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useRides, useRequests, useProfile, useCompletionStats } from "@/hooks/useRides";
 import { useFavorites, useToggleFavorite } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
-import { getDirectionShort, HOME_LOCATION } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Car, TrendingUp, UserCheck, Clock, ArrowRight, Bike, Star, Globe } from "lucide-react";
+import { ArrowLeft, Car, TrendingUp, UserCheck, Star, Globe, Briefcase, Activity } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { UserAvatar } from "@/components/UserAvatar";
+import { Bike } from "lucide-react";
 
 export default function PublicProfile() {
   const { userId } = useParams<{ userId: string }>();
@@ -24,12 +24,15 @@ export default function PublicProfile() {
   const toggleFavMutation = useToggleFavorite();
   const isFavorite = userId ? favorites.includes(userId) : false;
   const isOwnProfile = user?.id === userId;
+
+  const now = new Date();
+
+  // Lifetime stats
   const userRides = useMemo(
-    () => rides.filter((r) => r.user_id === userId).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)),
+    () => rides.filter((r) => r.user_id === userId),
     [rides, userId]
   );
 
-  const now = new Date();
   const activePastGiven = userRides.filter((r) => {
     const isPast = new Date(`${r.date}T${r.time}`) < now;
     const hasApprovedPassenger = allRequests.some(
@@ -46,6 +49,28 @@ export default function PublicProfile() {
     }).length;
     return (completionStats?.ridesTaken || 0) + activePastTaken;
   }, [allRequests, rides, userId, completionStats, now]);
+
+  // Recent activity (last 10 days)
+  const recentActivity = useMemo(() => {
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+
+    const recentGiven = userRides.filter((r) => {
+      const rideDate = new Date(`${r.date}T${r.time}`);
+      return rideDate >= tenDaysAgo && rideDate < now && allRequests.some(
+        (req) => req.ride_id === r.id && req.status === "approved"
+      );
+    }).length;
+
+    const recentTaken = allRequests.filter((r) => r.passenger_id === userId && r.status === "approved").filter((r) => {
+      const ride = rides.find((ri) => ri.id === r.ride_id);
+      if (!ride) return false;
+      const rideDate = new Date(`${ride.date}T${ride.time}`);
+      return rideDate >= tenDaysAgo && rideDate < now;
+    }).length;
+
+    return { given: recentGiven, taken: recentTaken, total: recentGiven + recentTaken };
+  }, [userRides, allRequests, rides, userId, now]);
 
   const isLoading = profileLoading || ridesLoading || reqLoading;
 
@@ -71,6 +96,7 @@ export default function PublicProfile() {
   const hasCarDetails = profile.car_name && profile.car_registration;
   const hasBikeDetails = profile.bike_name && profile.bike_registration;
   const profileLanguages: string[] = (profile as any).languages || [];
+  const officeLocation = (profile as any).office_location || "";
 
   return (
     <div className="min-h-screen bg-background">
@@ -83,10 +109,10 @@ export default function PublicProfile() {
         </div>
       </header>
 
-      <main className="container max-w-3xl mx-auto px-4 py-5 space-y-5">
-        {/* Name & Block */}
-        <div className="text-center space-y-1">
-          <div className="flex justify-center mb-3">
+      <main className="container max-w-3xl mx-auto px-4 py-6 space-y-4">
+        {/* Avatar + Name + Info */}
+        <div className="text-center space-y-2">
+          <div className="flex justify-center mb-2">
             <UserAvatar name={profile.name} avatarUrl={(profile as any).avatar_url} size="lg" />
           </div>
           <h2 className="text-xl font-bold text-foreground">{profile.name}</h2>
@@ -98,11 +124,17 @@ export default function PublicProfile() {
               ⭐ Preferred
             </Badge>
           )}
+          {officeLocation && (
+            <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5">
+              <Briefcase className="w-3.5 h-3.5" />
+              Works at: {officeLocation}
+            </p>
+          )}
           {!isOwnProfile && user && (
             <Button
               variant={isFavorite ? "default" : "outline"}
               size="sm"
-              className="mt-2"
+              className="mt-1"
               onClick={() => userId && toggleFavMutation.mutate(userId, {
                 onSuccess: (res) => toast.success(res.action === "added" ? "Added to favorites ⭐" : "Removed from favorites"),
               })}
@@ -115,18 +147,14 @@ export default function PublicProfile() {
 
         {/* Languages */}
         {profileLanguages.length > 0 && (
-          <Card>
-            <CardContent className="p-4 space-y-2">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <Globe className="w-4 h-4 text-primary" /> Languages
-              </h3>
-              <div className="flex flex-wrap gap-1.5">
-                {profileLanguages.map((lang) => (
-                  <Badge key={lang} variant="secondary" className="text-xs">{lang}</Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1.5 flex-wrap">
+              <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                {profileLanguages.join(" • ")}
+              </span>
+            </div>
+          </div>
         )}
 
         {/* Stats */}
@@ -155,6 +183,23 @@ export default function PublicProfile() {
           </Card>
         </div>
 
+        {/* Recent Activity */}
+        <Card>
+          <CardContent className="p-4 space-y-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Activity className="w-4 h-4 text-primary" /> Recent Activity
+              <span className="text-xs font-normal text-muted-foreground">(last 10 days)</span>
+            </h3>
+            <p className="text-lg font-bold text-foreground">
+              📊 {recentActivity.total} total ride{recentActivity.total !== 1 ? "s" : ""}
+            </p>
+            <div className="flex gap-4 text-xs text-muted-foreground">
+              <span>{recentActivity.given} given</span>
+              <span>{recentActivity.taken} taken</span>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Vehicle Info */}
         {(hasCarDetails || hasBikeDetails) && (
           <Card>
@@ -177,54 +222,6 @@ export default function PublicProfile() {
             </CardContent>
           </Card>
         )}
-
-        {/* Ride History */}
-        <section className="space-y-3">
-          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Clock className="w-4 h-4 text-primary" /> Ride History
-            <Badge variant="secondary" className="text-xs">{userRides.length}</Badge>
-          </h3>
-
-          {userRides.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">No rides offered yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {userRides.map((ride) => (
-                <Card key={ride.id} className="hover:shadow-sm transition-shadow">
-                  <CardContent className="p-3 flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                        <span>{ride.date}</span>
-                        <span className="text-muted-foreground">·</span>
-                        <span>{ride.time}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        {ride.vehicle?.toLowerCase().includes("bike") ? (
-                          <Bike className="w-3 h-3" />
-                        ) : (
-                          <Car className="w-3 h-3" />
-                        )}
-                        <span>{ride.vehicle || "Car"}</span>
-                        <span>· {ride.seats} seat{ride.seats !== 1 ? "s" : ""}</span>
-                      </div>
-                      {ride.destination && (
-                        <p className="text-xs text-muted-foreground truncate">
-                          {ride.direction === "to-office"
-                            ? `→ ${ride.destination}`
-                            : `${ride.destination} →`}
-                        </p>
-                      )}
-                    </div>
-                    <Badge variant="outline" className="text-xs">
-                      <ArrowRight className="w-3 h-3 mr-1" />
-                      {getDirectionShort(ride.direction as "to-office" | "to-home")}
-                    </Badge>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </section>
       </main>
     </div>
   );
