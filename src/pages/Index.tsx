@@ -176,11 +176,14 @@ export default function Index() {
                 </Select>
               </div>
 
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="pl-9 text-sm" />
-                </div>
+              <RideFilters
+                dateFilter={dateFilter}
+                onDateChange={setDateFilter}
+                vehicleFilter={vehicleFilter}
+                onVehicleChange={setVehicleFilter}
+              />
+
+              <div className="flex justify-end">
                 <Button
                   onClick={() => setShowForm(!showForm)}
                   className="shrink-0"
